@@ -1,0 +1,11 @@
+[ABSOLUTEMAXRATINGS]
+UMotorMax:100
+IMotorMax:3
+UBrakeMax:90
+IBrakeMax:1.5
+PMotorMax:300
+SpeedMax:1500
+CoupleMax:10
+[MAIL]
+
+

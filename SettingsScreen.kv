@@ -1,0 +1,202 @@
+BoxLayout:
+	GridLayout:
+		rows : 2
+		cols : 2
+		pos_hint:{'center_x':0.75, 'center_y':0.30}
+		spacing : (50,50)
+		Button:
+			on_release: Popup_Add_Motor.open()
+			
+			background_normal:  "Datas/add_file.png"
+			background_down:    "Datas/add_file.png"
+			size_hint: None,None
+			size: 128, 128
+			size_hint: None, None
+		
+		Button:
+			on_release: Popup_Edit_Motor.open()
+			background_normal:  "Datas/edit_file.png"
+			background_down:    "Datas/edit_file.png"
+			size_hint: None,None
+			size: 128, 128
+		
+		Button:
+			background_normal:  "Datas/delete_file.png"
+			background_down:    "Datas/delete_file.png"
+			size_hint: None,None
+			size: 128, 128
+		
+		Button:
+			background_normal:  "Datas/savedir_file.png"
+			background_down:    "Datas/savedir_file.png"
+			size_hint: None,None
+			size: 128, 128
+			
+	BoxLayout:
+		id: bl
+		Popup:
+			id: Popup_Add_Motor
+			title: "Add Motor"
+			size_hint:(.5, .8)
+			on_parent:
+				if self.parent == bl: self.parent.remove_widget(self)
+			BoxLayout:
+				GridLayout:
+					rows : 10
+					cols : 2
+					col_default_width : 130
+					col_force_default : True
+					row_default_height : 30
+					row_force_default : True
+					spacing : (10,20)
+					pos : (50,50)
+					
+					Label :
+						text: 'Name of Motor'
+					TextInput:
+						hint_text: "Name of motor file"
+						
+					Label :
+						text: 'Max current:'
+					TextInput:
+						input_filter:'float'
+						hint_text: "[A] - Number only"
+						
+					Label :
+						text: 'Max voltage:'
+					TextInput:
+						input_filter:'float'
+						hint_text: "[V] - Number only"
+						
+					Label :
+						text: 'Max Power:'
+					TextInput:
+						input_filter:'float'
+						hint_text: "[W] - Number only"
+					
+					Label :
+						text: 'Max speed:'
+					TextInput:
+						input_filter:'float'
+						hint_text: "[tr/min] - optionnal"
+						
+				Button:
+					text: 'Validate'
+					size: 75, 50
+					size_hint: None, None
+					pos : (100,75)
+					on_release: Popup_Add_Motor.dismiss()
+	BoxLayout:
+		id: bl2
+		Popup:
+			id: Popup_Edit_Motor
+			title: "Edit Motor"
+			size_hint:(.6, .8)
+			on_parent:
+				if self.parent == bl2: self.parent.remove_widget(self)
+			
+			BoxLayout:
+				GridLayout:
+					id:GL1
+					rows : 10
+					cols : 2
+					col_default_width : 130
+					col_force_default : True
+					row_default_height : 30
+					row_force_default : True
+					spacing : (10,20)
+					pos : (50,50)
+					
+					Button:
+						text:"Choose File"
+						on_release:Popup_Choose_File.open()
+					TextInput:
+						id : file_choosen_input
+						hint_text : "File Path"
+						disabled: True #not CheckBox.active
+						
+					Label :
+						text: 'Name of Motor'
+					TextInput:
+						hint_text: "Name of motor file"
+						
+					Label :
+						text: 'Max current:'
+					TextInput:
+						input_filter:'float'
+						hint_text: "[A] - Number only"
+						
+					Label :
+						text: 'Max voltage:'
+					TextInput:
+						input_filter:'float'
+						hint_text: "[V] - Number only"
+						
+					Label :
+						text: 'Max Power:'
+					TextInput:
+						input_filter:'float'
+						hint_text: "[W] - Number only"
+					
+					Label :
+						text: 'Max speed:'
+					TextInput:
+						input_filter:'float'
+						hint_text: "[tr/min] - optionnal"
+				GridLayout:
+					rows : 2
+					cols : 1
+					spacing : (0,15)
+					size:(150,50)
+					size_hint:None,None
+					pos_hint:{'center_x':0.85, 'center_y':0.3}
+
+					Button:
+						text: 'Cancel'
+						size: 100, 50
+						size_hint: None, None
+						#pos : (100,75)
+						size_hint:None,None
+						on_release: Popup_Edit_Motor.dismiss()
+					Button:
+						text: 'Save changes'
+						size: 100, 50
+						size_hint: None, None
+						#pos : (100,75)
+						size_hint:None,None
+						on_release: Popup_Edit_Motor.dismiss()
+
+				BoxLayout:
+					id:bl3
+					Popup:
+						id: Popup_Choose_File
+						title: "Choose motor file"
+						size_hint:(.6, .8)
+						on_parent:
+							if self.parent == bl3: self.parent.remove_widget(self)
+						BoxLayout:
+							orientation: "vertical"
+							size_hint:(1,1)
+							FileChooserListView:
+								id:filechooser1
+								path : "/home/pi/Documents/Application_V_0_1/Application_V_0_1/Datas"
+								
+							GridLayout:
+								rows : 1
+								cols : 2
+								spacing : (15,0)
+								size:(150,50)
+								size_hint:None,None
+								pos_hint:{'center_x':0.8, 'center_y':0.5}
+
+								Button:
+									text: 'Load'
+									size: 75, 50
+									size_hint: None, None
+									on_release:file_choosen_input.text = filechooser1.selection;Popup_Choose_File.dismiss()
+					
+								Button:
+									text: 'Cancel'
+									size: 75, 50
+									size_hint: None, None
+									on_release: Popup_Choose_File.dismiss()

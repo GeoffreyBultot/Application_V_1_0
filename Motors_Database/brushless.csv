@@ -1,0 +1,6 @@
+Name;brushless
+Type;DC
+UMotorMax;50
+IMotorMax;1.5
+PMotorMax;80
+SpeedMax;100

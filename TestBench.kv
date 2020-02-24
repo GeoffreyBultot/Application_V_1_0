@@ -1,0 +1,548 @@
+#:kivy 1.06.0
+#import Gauge
+#from kivy.uix.screenmanager import  FadeTransition
+
+BoxLayout:
+	orientation: 'vertical'
+
+	SomeMenu_ActionBar:
+		id: ActionBar
+
+	ScreenManager:
+		id: sm
+
+
+<AutomaticScreen>:
+	name: 'AutomaticScreen'
+<ManualScreen>:
+	name: 'ManualScreen'
+	
+	FloatLayout:
+	
+		Button:
+			text : 'Load'
+			size_hint : None, None
+			size: 50,40
+			pos : 400,390
+			on_release: Manual_Popup_Choose_File.open()
+		
+		Label:
+			id : lbl_man_Type
+			text : 'Type '
+			size_hint : None, None
+			size: 300,20
+			pos : 460,385
+			text_size: self.size
+			halign: 'left'
+			valign: 'middle'
+		
+		Label:
+			id : lbl_man_Name
+			text : 'Name: '
+			size_hint : None, None
+			size: 300,20
+			pos : 460,405
+			text_size: self.size
+			halign: 'left'
+			valign: 'middle'
+		
+		GridLayout:
+			
+			cols : 4
+			rows : 4 
+			col_default_width : 60
+			col_force_default : True
+			spacing : (30,10)
+			pos : (400,-55)
+			Label:
+				id:manual_max_U
+				text : "Max : "
+				size_hint_y:None
+				height:30
+			Label:
+				id:manual_max_I
+				text : "Max : "
+				size_hint_y:None
+				height:30
+			Label:
+				id:manual_max_S
+				text : "Max : "
+				size_hint_y:None
+				height:30
+			Label:
+				id:manual_max_C
+				text : "Max : "
+				size_hint_y:None
+				height:30
+				
+			Slider:
+				id : slider_man_U
+				orientation:'vertical'
+				size_hint_y:None
+				height:200
+				background_vertical:"Datas/degrade.png"
+				background_width:5
+			Slider:
+				id : slider_man_I
+				orientation:'vertical'
+				size_hint_y:None
+				height:200
+				background_vertical:"Datas/degrade.png"
+				background_width:5
+			Slider:
+				id : slider_man_S
+				orientation:'vertical'
+				size_hint_y:None
+				height:200
+				background_vertical:"Datas/degrade.png"
+				background_width:5
+			Slider:
+				id : slider_man_C
+				orientation:'vertical'
+				size_hint_y:None
+				height:200
+				background_vertical:"Datas/degrade.png"
+				background_width:5
+			
+			TextInput:
+				id: txtIn_Manual_U
+				input_filter:'float'
+				hint_text: "[V]"
+				size_hint_y:None
+				height:30
+				text : str(round(slider_man_U.value,2))
+			TextInput:
+				id: txtIn_Manual_I
+				input_filter:'float'
+				hint_text: "[A]"
+				size_hint_y:None
+				height:30
+				text : str(round(slider_man_I.value,2))
+			TextInput:
+				id: txtIn_Manual_S
+				input_filter:'float'
+				hint_text: "[tr/min]"
+				size_hint_y:None
+				height:30
+				text : str(round(slider_man_S.value,2))
+			TextInput:
+				id: txtIn_Manual_C
+				input_filter:'float'
+				hint_text: "[Nm]"
+				size_hint_y:None
+				height:30
+				text : str(round(slider_man_C.value,2))
+				
+			Button:
+				id:Manual_TC_Set_Umotor
+				background_normal:	"Datas/manual_button_up.ico"
+				background_down:	"Datas/manual_button_down.ico"
+				size_hint: None,None
+				size: 50, 50
+				border: (0, 0, 0, 0)  # Don't stretch the outer two pixels on each edge when resizing.
+				on_release:root.btn_Set_Manual_Release('Manual_TC_Set_Umotor')
+			Button:
+				id:Manual_TC_Set_Imotor
+				background_normal:	"Datas/manual_button_up.ico"
+				background_down:	"Datas/manual_button_down.ico"
+				size_hint: None,None
+				size: 50, 50
+				border: (0, 0, 0, 0)  # Don't stretch the outer two pixels on each edge when resizing.
+				on_release:root.btn_Set_Manual_Release('Manual_TC_Set_Imotor')
+				
+			Button:
+				id:Manual_TC_Set_Smotor
+				background_normal:	"Datas/manual_button_up.ico"
+				background_down:	"Datas/manual_button_down.ico"
+				size_hint: None,None
+				size: 50, 50
+				border: (0, 0, 0, 0)  # Don't stretch the outer two pixels on each edge when resizing.
+				on_release:root.btn_Set_Manual_Release('Manual_TC_Set_Speed')
+			Button:
+				id:Manual_TC_Set_Cmotor
+				background_normal:	"Datas/manual_button_up.ico"
+				background_down:	"Datas/manual_button_down.ico"
+				size_hint: None,None
+				size: 50, 50
+				border: (0, 0, 0, 0)  # Don't stretch the outer two pixels on each edge when resizing.
+				on_release:root.btn_Set_Manual_Release('Manual_TC_Set_Couple')
+	BoxLayout:
+		id:bl3
+		p_man_choose_file:Manual_Popup_Choose_File.__self__
+		Popup:
+			id: Manual_Popup_Choose_File
+			
+			title: "Choose motor file"
+			size_hint:(.6, .8)
+			on_parent:
+				if self.parent == bl3: self.parent.remove_widget(self)
+			BoxLayout:
+				orientation: "vertical"
+				size_hint:(1,1)
+				FileChooserIconView:
+					id:filechooser1
+					path : "/home/pi/Documents/Application_V_0_1/Application_V_0_1/Motors_Database"
+					
+				GridLayout:
+					rows : 1
+					cols : 2
+					spacing : (15,0)
+					size:(150,50)
+					size_hint:None,None
+					pos_hint:{'center_x':0.8, 'center_y':0.5}
+
+					Button:
+						text: 'Load'
+						size: 75, 50
+						size_hint: None, None
+						on_release: root.LoadFileToModify(filechooser1.selection);Manual_Popup_Choose_File.dismiss()
+		
+					Button:
+						text: 'Cancel'
+						size: 75, 50
+						size_hint: None, None
+						on_release: Manual_Popup_Choose_File.dismiss()
+<HomeScreen>:
+	name: 'HomeScreen'
+	
+	GridLayout:
+		rows : 2
+		cols : 2
+		pos_hint:{'center_x':0.75, 'center_y':0.4}
+		spacing : (30,30)
+		Button:
+			on_release: app.changeScreen(1)#app.root.ids.sm.current = 'ManualScreen'
+			background_normal:	"Datas/sliders_file.png"
+			background_down:	"Datas/sliders_file.png"
+			size_hint: None,None
+			size: 180, 180
+			size_hint: None, None
+		
+		Button:
+			on_release:	 app.changeScreen(2)
+			background_normal:	"Datas/auto_file.png"
+			background_down:	"Datas/auto_file.png"
+			size_hint: None,None
+			size: 180, 180
+		
+		Button:
+			on_release:	 app.changeScreen(3)
+			background_normal:	"Datas/settings_file.png"
+			background_down:	"Datas/settings_file.png"
+			size_hint: None,None
+			size: 180, 180
+		
+		Button:
+			
+			size_hint: None,None
+			size: 180, 180
+
+<SettingsScreen>:
+	name: 'SettingsScreen'
+	GridLayout:
+		rows : 2
+		cols : 2
+		pos_hint:{'center_x':0.75, 'center_y':0.30}
+		spacing : (50,50)
+		Button:
+			on_release: Popup_Add_Motor.open()
+			
+			background_normal:	"Datas/add_file.png"
+			background_down:	"Datas/add_file.png"
+			size_hint: None,None
+			size: 128, 128
+			size_hint: None, None
+		
+		Button:
+			on_release: Popup_Edit_Motor.open()
+			background_normal:	"Datas/edit_file.png"
+			background_down:	"Datas/edit_file.png"
+			size_hint: None,None
+			size: 128, 128
+		
+		Button:
+			background_normal:	"Datas/delete_file.png"
+			background_down:	"Datas/delete_file.png"
+			size_hint: None,None
+			size: 128, 128
+		
+		Button:
+			background_normal:	"Datas/savedir_file.png"
+			background_down:	"Datas/savedir_file.png"
+			size_hint: None,None
+			size: 128, 128
+			
+	BoxLayout:
+		id: bl
+		p_add_mot : Popup_Add_Motor.__self__
+		Popup:
+			id: Popup_Add_Motor
+			title: "Add Motor"
+			size_hint:(.55, .8)
+			on_parent:
+				if self.parent == bl: self.parent.remove_widget(self)
+			BoxLayout:
+				current_value:'DC'
+				GridLayout:
+					rows : 10
+					cols : 3
+					col_default_width : 130
+					col_force_default : True
+					row_default_height : 30
+					row_force_default : True
+					spacing : (10,20)
+					pos : (50,50)
+					
+					ToggleButton :
+						text:'AC'
+						group:'Type_motor'
+						on_release:  if(self.state == 'normal'):self.state='down';current_value = self.text
+					ToggleButton :
+						text:'DC'
+						group:'Type_motor'
+						state : 'down'
+						on_release:  if(self.state == 'normal'):self.state='down';current_value = self.text
+					ToggleButton :
+						text:'SBS'
+						group:'Type_motor'
+						on_release:  if(self.state == 'normal'):self.state='down';current_value = self.text
+
+					Label :
+						text: 'Name of Motor'
+					TextInput:
+						id: AddMotor_Name
+						hint_text: "Name of motor file"
+					Label :
+						
+					Label :
+						text: 'Max current:'
+					TextInput:
+						id: AddMotor_MaxI
+						input_filter:'float'
+						hint_text: "[A] - Number only"
+					Label :
+						
+					Label :
+						text: 'Max voltage:'
+					TextInput:
+						id: AddMotor_MaxU
+						input_filter:'float'
+						hint_text: "[V] - Number only"
+					Label :
+						
+					Label :
+						text: 'Max Power:'
+					TextInput:
+						id: AddMotor_MaxP
+						input_filter:'float'
+						hint_text: "[W] - Number only"
+					Label :
+					
+					Label :
+						text: 'Max speed:'
+					TextInput:
+						id: AddMotor_MaxSpeed
+						input_filter:'float'
+						hint_text: "[tr/min] - optionnal"
+					Label :
+						
+				Button:
+					text: 'Validate'
+					size: 75, 50
+					size_hint: None, None
+					pos : (100,75)
+					on_release: root.AddMotor(self.parent.current_value, AddMotor_Name.text,AddMotor_MaxI.text, AddMotor_MaxU.text,AddMotor_MaxP.text,AddMotor_MaxSpeed.text,"add");Popup_Add_Motor.dismiss()
+	BoxLayout:
+		id: bl2
+		p_edit_motor:Popup_Edit_Motor.__self__
+		Popup:
+			id: Popup_Edit_Motor
+			title: "Edit Motor"
+			size_hint:(.6, .8)
+			on_parent:
+				if self.parent == bl2: self.parent.remove_widget(self)
+			
+			FloatLayout:
+				current_value:'DC'
+				GridLayout:
+					id:GL1
+					rows : 10
+					cols : 2
+					col_default_width : 130
+					col_force_default : True
+					row_default_height : 30
+					row_force_default : True
+					spacing : (10,15)
+					hint_pos : (None,0)
+					pos : self.parent.pos
+					
+					Button:
+						text:"Choose File"
+						on_release:Popup_Choose_File.open()
+					Label:
+						id : file_choosen_input
+						markup: True
+						multiline : False
+						hint_text : "File Path"
+						size_hint: (None, None)
+						height : 50
+						width : 350
+						text_size: 300,50
+						width: (300)
+						halign: 'left'
+						valign: 'middle'
+						
+					Label :
+						text: 'Name of Motor'
+					TextInput:
+						id:EditMotor_Name
+						hint_text: "Name of motor file"
+					Label :
+						text: 'Max current:'
+					TextInput:
+						id: EditMotor_MaxI
+						input_filter:'float'
+						hint_text: "[A] - Number only"
+						
+					Label :
+						text: 'Max voltage:'
+					TextInput:
+						id: EditMotor_MaxU
+						input_filter:'float'
+						hint_text: "[V] - Number only"
+						
+					Label :
+						text: 'Max Power:'
+					TextInput:
+						id: EditMotor_MaxP
+						input_filter:'float'
+						hint_text: "[W] - Number only"
+					
+					Label :
+						text: 'Max speed:'
+					TextInput:
+						id: EditMotor_MaxSpeed
+						input_filter:'float'
+						hint_text: "[tr/min] - optionnal"
+				GridLayout:
+					rows : 2
+					cols : 1
+					spacing : (0,15)
+					size_hint:None,None
+					size:(100,115)
+					
+					hint_pos_x : None
+					pos : (100,100)
+					
+					hint_pos : (None,0)
+					pos_hint:{'center_x':0.85, 'center_y':0.2}
+
+					Button:
+						text: 'Cancel'
+						size: 100, 50
+						size_hint: None, None
+						#pos : (100,75)
+						size_hint:None,None
+						on_release: Popup_Edit_Motor.dismiss()
+					Button:
+						text: 'Save changes'
+						size: 100, 50
+						size_hint: None, None
+						#pos : (100,75)
+						size_hint:None,None
+						on_release: on_release: root.AddMotor(self.parent.parent.current_value, EditMotor_Name.text,EditMotor_MaxI.text, EditMotor_MaxU.text,EditMotor_MaxP.text,EditMotor_MaxSpeed.text,"edit"); Popup_Edit_Motor.dismiss()
+
+	BoxLayout:
+		id:bl3
+		p_choose_file:Popup_Choose_File.__self__
+		Popup:
+			id: Popup_Choose_File
+			
+			title: "Choose motor file"
+			size_hint:(.6, .8)
+			on_parent:
+				if self.parent == bl3: self.parent.remove_widget(self)
+			BoxLayout:
+				orientation: "vertical"
+				size_hint:(1,1)
+				FileChooserIconView:
+					id:filechooser1
+					path : "/home/pi/Documents/Application_V_0_1/Application_V_0_1/Motors_Database"
+					
+				GridLayout:
+					rows : 1
+					cols : 2
+					spacing : (15,0)
+					size:(150,50)
+					size_hint:None,None
+					pos_hint:{'center_x':0.8, 'center_y':0.5}
+
+					Button:
+						text: 'Load'
+						size: 75, 50
+						size_hint: None, None
+						on_release: root.LoadFileToModify(filechooser1.selection);Popup_Choose_File.dismiss()
+		
+					Button:
+						text: 'Cancel'
+						size: 75, 50
+						size_hint: None, None
+						on_release: Popup_Choose_File.dismiss()
+
+<SomeMenu_ActionBar@ActionBar>:
+
+	ActionView:
+		id: ActionView
+		
+		ActionPrevious:
+			#title: app.title if app.title is not None else 'Action Previous'
+			title: app.title
+			on_release: app.changeScreen(0)
+				
+		ActionButton:
+			text: "emmergency"
+			background_normal: ''
+			background_color: 1, .3, .4, .85
+		ActionGroup:
+			id: App_ActionGroup
+			mode: 'spinner'
+			text: 'Screens'
+
+			ActionButton:
+				text: 'Manual Mode'
+				on_release: app.changeScreen(1)#app.root.ids.sm.current = 'ManualScreen'
+			ActionButton:
+				text: 'Automatic Mode'
+				on_release:	 app.changeScreen(2)
+			ActionButton:
+				text: 'Settings'
+				on_release:	 app.changeScreen(3)
+		ActionGroup:
+			id: App_ActionGroup
+			mode: 'spinner'
+			text: 'App'
+
+			ActionButton:
+				text: 'Settings'
+				on_press: app.open_settings()
+			ActionButton:
+				text: 'Quit'
+				on_press: app.quit()
+
+		ActionGroup:
+			id: File_ActionGroup
+			mode: 'spinner'
+			text: 'File'
+
+			ActionButton:
+				text: 'Open'
+			ActionButton:
+				text: 'Save'
+
+<HiddenIcon_ActionPrevious@ActionPrevious>:
+	
+	with_previous: False
+	app_icon: ''
+	app_icon_width: 0
+	app_icon_height: 0
+	size_hint_x: None
