@@ -95,7 +95,7 @@ class Gauge(Widget):
         self._needle.center_x = self._gauge.center_x
         self._needle.center_y = self._gauge.center_y
         self._needle.rotation = 90 - (self.value * 180.0/self.maxvalue) # (50 * self.unit) 
-        self._glab.text = "[b]{0:.1f}[/b]".format(self.value)
+        self._glab.text = "[b]{0:.2f}[/b]".format(self.value)
         if(self.value < self.maxvalue/3):
             self._glab.color = [0,1,0,1]
         elif(self.value > self.maxvalue/3)&(self.value<2*self.maxvalue/3):

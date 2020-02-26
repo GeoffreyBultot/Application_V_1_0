@@ -142,14 +142,19 @@ class ManualScreen(Screen):
 				self.ids.slider_man_C.max = self.app.AbsoluteMaxRatings['C_COUPLE_MAX']
 
 	def update(self, dt):
-		i = self.app.labtooTestBench.TMTC_COM.testNumber
-		if(i<255):
-			# self.gaugeU_Motor.value = (i/3)
-			# self.gaugeU_Brake.value = (i/2)
-			# self.gauge_Speed.value = i*10
-			# self.gaugeI_Motor.value = (i)/33
-			# self.gaugeI_brake.value = (i/50)
-			self.gauge_Couple.value = (i*0.039)#*2.08)
-		else:
-			self.i=0
-			
+		i=0
+		self.i=0
+		raw_couple 	= self.app.labtooTestBench.TMTC_COM.rawCouple
+		raw_U_Motor	= self.app.labtooTestBench.TMTC_COM.rawUMotor
+		raw_I_Motor	= self.app.labtooTestBench.TMTC_COM.rawIMotor
+		raw_U_Brake = self.app.labtooTestBench.TMTC_COM.rawUBrake
+		raw_I_Brake 	= self.app.labtooTestBench.TMTC_COM.rawIBrake
+		raw_Speed 	= self.app.labtooTestBench.TMTC_COM.rawSpeed
+
+		self.gaugeU_Motor.value = (raw_U_Motor*0.037875)#3.3/4095/0.0223)
+		self.gaugeI_Motor.value = (raw_I_Motor*3.3/4095/6.82927/0.05)
+		
+		self.gaugeU_Brake.value = (raw_U_Brake*3.3/4095/0.0212766)
+		self.gaugeI_brake.value = (raw_I_Brake*3.3/4095/6.82927)
+		self.gauge_Speed.value = raw_Speed*10
+		self.gauge_Couple.value = (raw_couple*0.039*0.186)#*2.08)
