@@ -38,6 +38,8 @@ Config.set('graphics', 'height', '480')
 
 
 filename = r"Config.txt"
+ReadTM_Thread_ON = True
+speed_reading_tm = 0.1
 
 class ScreenManager(ScreenManager):
 	pass
@@ -52,29 +54,33 @@ class HomeScreen(Screen):
 	def update(self, dt):
 		pass
 
-		
+
 
 class TestBenchApp(App):
 	tm = 1000
-	labtooTestBench = LabtoolLayer()
 	title = 'TestBench ISIB'
+	Table_Tm_Reg = []
+	global ReadTM_Thread_ON
 	def build(self):
 		
-		configParser = configparser.RawConfigParser()   
+		self.labtooTestBench = LabtoolLayer(self)
+		configParser = configparser.RawConfigParser()	
 		configParser.read(filename)
 		
 		self.AbsoluteMaxRatings = {
-			'C_U_MOT_MAX'   : float(configParser.get('ABSOLUTEMAXRATINGS','UMotorMax')),
-			'C_I_MOT_MAX'   : float(configParser.get('ABSOLUTEMAXRATINGS','IMotorMax')),
+			'C_U_MOT_MAX'	: float(configParser.get('ABSOLUTEMAXRATINGS','UMotorMax')),
+			'C_I_MOT_MAX'	: float(configParser.get('ABSOLUTEMAXRATINGS','IMotorMax')),
 			'C_P_MOT_MAX' : float(configParser.get('ABSOLUTEMAXRATINGS','PMotorMax')),
-			'C_SPEED_MOT_MAX'     : float(configParser.get('ABSOLUTEMAXRATINGS','SpeedMax')),
+			'C_SPEED_MOT_MAX'	  : float(configParser.get('ABSOLUTEMAXRATINGS','SpeedMax')),
 			'C_U_BRAKE_MAX' : float(configParser.get('ABSOLUTEMAXRATINGS','UBrakeMax')),
-			'C_I_BRAKE_MAX'     : float(configParser.get('ABSOLUTEMAXRATINGS','IBrakeMax')),
-			'C_COUPLE_MAX'     : float(configParser.get('ABSOLUTEMAXRATINGS','CoupleMax'))
+			'C_I_BRAKE_MAX'		: float(configParser.get('ABSOLUTEMAXRATINGS','IBrakeMax')),
+			'C_COUPLE_MAX'	   : float(configParser.get('ABSOLUTEMAXRATINGS','CoupleMax'))
 		}
 		
 		Config.write()
 		
+		for k, v in TM_TABLE_ID.items():
+			self.Table_Tm_Reg.append(0)
 		self.root = Builder.load_file('TestBench.kv')
 		
 		sm = self.root.ids.sm
@@ -88,7 +94,7 @@ class TestBenchApp(App):
 		
 	def changeScreen(self,idx_Screen):
 
-		
+		print(self.Table_Tm_Reg)
 		sm = self.root.ids.sm
 		Clock.unschedule(sm.current_screen.update)
 		sm.current = Screens_dict[idx_Screen]

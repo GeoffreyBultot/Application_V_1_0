@@ -1,0 +1,6 @@
+Name;test tondeuse
+Type;DC
+UMotorMax;15
+IMotorMax;2
+PMotorMax;30
+SpeedMax;300

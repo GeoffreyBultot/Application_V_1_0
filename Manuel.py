@@ -92,16 +92,31 @@ class ManualScreen(Screen):
 		setting = Manual_TC_dict[TC_Man]
 
 		if(Manual_TC_dict['Manual_TC_Set_Umotor'] == setting):
-			print(self.ids.txtIn_Manual_U.text)
+			value = self.FloatToRaw(self.ids.txtIn_Manual_U.text,'TM_U_MOT')
+			self.app.labtooTestBench.SendTC(TC_TABLE_ID['TC_SET_U_MOT'],value)
+			
 		if(Manual_TC_dict['Manual_TC_Set_Imotor'] == setting):
 			print(self.ids.txtIn_Manual_I.text)
+			value = self.FloatToRaw(self.ids.txtIn_Manual_U.text,'TM_I_MOT')
+			self.app.labtooTestBench.SendTC(TC_TABLE_ID['TC_SET_I_MOT'],value)
+			
 		if(Manual_TC_dict['Manual_TC_Set_Speed'] == setting):
 			print(self.ids.txtIn_Manual_S.text)
+			value = self.FloatToRaw(self.ids.txtIn_Manual_U.text,'TM_SP_MOT')
+			self.app.labtooTestBench.SendTC(TC_TABLE_ID['TC_SET_SP_MOT'],value)
+			
 		if(Manual_TC_dict['Manual_TC_Set_Couple'] == setting):
 			print(self.ids.txtIn_Manual_C.text)
-		
-
-
+			value = self.FloatToRaw(self.ids.txtIn_Manual_U.text,'TM_CR_MOT')
+			self.app.labtooTestBench.SendTC(TC_TABLE_ID['TC_SET_CR_MOT'],value)
+			
+			
+			
+	def FloatToRaw(self,floatValue,nameTM):
+		value = float(floatValue)
+		value /= ( TABLE_CONVERSION[nameTM] ) 
+		value = int(value)
+		return value
 	def LoadFileToModify(self,selection):
 		
 		#self.ids.file_choosen_input.text = selection[0]
@@ -142,19 +157,18 @@ class ManualScreen(Screen):
 				self.ids.slider_man_C.max = self.app.AbsoluteMaxRatings['C_COUPLE_MAX']
 
 	def update(self, dt):
-		i=0
-		self.i=0
-		raw_couple 	= self.app.labtooTestBench.TMTC_COM.rawCouple
-		raw_U_Motor	= self.app.labtooTestBench.TMTC_COM.rawUMotor
-		raw_I_Motor	= self.app.labtooTestBench.TMTC_COM.rawIMotor
-		raw_U_Brake = self.app.labtooTestBench.TMTC_COM.rawUBrake
-		raw_I_Brake 	= self.app.labtooTestBench.TMTC_COM.rawIBrake
-		raw_Speed 	= self.app.labtooTestBench.TMTC_COM.rawSpeed
+		tab_TM = self.app.Table_Tm_Reg
+		#print(tab_TM)
+		raw_couple 	= tab_TM[TM_TABLE_ID['TM_CR_MOT']]
+		raw_U_Motor	= tab_TM[TM_TABLE_ID['TM_U_MOT']]
+		raw_I_Motor	= tab_TM[TM_TABLE_ID['TM_I_MOT']]
+		raw_Speed 	= tab_TM[TM_TABLE_ID['TM_SP_MOT']]
+		raw_U_Brake 	= tab_TM[TM_TABLE_ID['TM_U_BRAKE']]
+		raw_I_Brake 	= tab_TM[TM_TABLE_ID['TM_I_BRAKE']]
 
-		self.gaugeU_Motor.value = (raw_U_Motor*0.037875)#3.3/4095/0.0223)
-		self.gaugeI_Motor.value = (raw_I_Motor*3.3/4095/6.82927/0.05)
-		
-		self.gaugeU_Brake.value = (raw_U_Brake*3.3/4095/0.0212766)
-		self.gaugeI_brake.value = (raw_I_Brake*3.3/4095/6.82927)
-		self.gauge_Speed.value = raw_Speed*10
-		self.gauge_Couple.value = (raw_couple*0.039*0.186)#*2.08)
+		self.gaugeU_Motor.value 	= (raw_U_Motor	*	TABLE_CONVERSION['TM_U_MOT'])#3.3/4095/0.0223)
+		self.gaugeI_Motor.value 	= (raw_I_Motor	*	TABLE_CONVERSION['TM_I_MOT'])
+		self.gauge_Speed.value 	= (raw_Speed		*	TABLE_CONVERSION['TM_SP_MOT'])
+		self.gauge_Couple.value 	= (raw_couple	*	TABLE_CONVERSION['TM_CR_MOT'])
+		self.gaugeU_Brake.value 	= (raw_U_Brake	*	TABLE_CONVERSION['TM_U_BRAKE'])
+		self.gaugeI_brake.value 	= (raw_I_Brake	*	TABLE_CONVERSION['TM_I_BRAKE'])
