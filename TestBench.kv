@@ -1,6 +1,6 @@
 #:kivy 1.06.0
 #import Gauge
-#from kivy.uix.screenmanager import  FadeTransition
+#from kivy.uix.screenmanager import	 FadeTransition
 
 BoxLayout:
 	orientation: 'vertical'
@@ -14,6 +14,86 @@ BoxLayout:
 
 <AutomaticScreen>:
 	name: 'AutomaticScreen'
+	
+	FloatLayout:
+	
+		Button:
+			text : 'LOAD'
+			size_hint : None, None
+			size: 75,40
+			pos_hint: {'top': .5,'right':0.99}
+			on_release: Popup_Choose_File_Auto.open()
+			
+		Button:
+			text : 'START'
+			size_hint : None, None
+			size: 75,40
+			pos_hint: {'top': .65,'right':0.99}
+			on_release: root.Start_Stop()
+			disabled : True
+		
+		Label:
+			text: "Test : No test in progress"
+			pos:-300,50
+			
+		TextInput:
+			id: txtIn_Automatic_SetPoint
+			hint_text: "Setpoints sent to the bench"
+			background_color: (.5,.5,.5,1)
+			size_hint_y:.55
+			size_hint_x:.4
+			pos_hint:{'top': .6,'right':0.42}
+			readonly: True
+		Label:
+			text: "Measures in current test:"
+			pos:52,50
+			
+		TextInput:
+			id: txtIn_Automatic_Measures
+			hint_text: "Measured values in the bench"
+			background_color: (.5,.5,.5,1)
+			size_hint_y:.55
+			size_hint_x:.4
+			pos_hint:{'top': .6,'right':.86}
+			readonly: True
+			
+	BoxLayout:
+		id:bl_pop_file_auto
+		p_choose_file_Auto:Popup_Choose_File_Auto.__self__
+		Popup:
+			id: Popup_Choose_File_Auto
+			
+			title: "Choose set-up file"
+			size_hint:(.6, .8)
+			on_parent:
+				if self.parent == bl_pop_file_auto: self.parent.remove_widget(self)
+			BoxLayout:
+				orientation: "vertical"
+				size_hint:(1,1)
+				FileChooserIconView:
+					id:filechooser_setup_auto
+					path : "./"
+					
+				GridLayout:
+					rows : 1
+					cols : 2
+					spacing : (15,0)
+					size:(150,50)
+					size_hint:None,None
+					pos_hint:{'center_x':0.8, 'center_y':0.5}
+
+					Button:
+						text: 'Load'
+						size: 75, 50
+						size_hint: None, None
+						on_release: root.LoadSetUpFile(filechooser_setup_auto.selection);Popup_Choose_File_Auto.dismiss()
+		
+					Button:
+						text: 'Cancel'
+						size: 75, 50
+						size_hint: None, None
+						on_release: Popup_Choose_File_Auto.dismiss()
+			
 <ManualScreen>:
 	name: 'ManualScreen'
 	
@@ -181,7 +261,7 @@ BoxLayout:
 				size_hint:(1,1)
 				FileChooserIconView:
 					id:filechooser1
-					path : "/home/pi/Documents/Application_V_0_1/Application_V_0_1/Motors_Database"
+					path : "./"
 					
 				GridLayout:
 					rows : 1
@@ -195,7 +275,7 @@ BoxLayout:
 						text: 'Load'
 						size: 75, 50
 						size_hint: None, None
-						on_release: root.LoadFileToModify(filechooser1.selection);Manual_Popup_Choose_File.dismiss()
+						on_release: root.LoadFile(filechooser1.selection);Manual_Popup_Choose_File.dismiss()
 		
 					Button:
 						text: 'Cancel'
@@ -296,16 +376,16 @@ BoxLayout:
 					ToggleButton :
 						text:'AC'
 						group:'Type_motor'
-						on_release:  if(self.state == 'normal'):self.state='down';current_value = self.text
+						on_release:	 if(self.state == 'normal'):self.state='down';current_value = self.text
 					ToggleButton :
 						text:'DC'
 						group:'Type_motor'
 						state : 'down'
-						on_release:  if(self.state == 'normal'):self.state='down';current_value = self.text
+						on_release:	 if(self.state == 'normal'):self.state='down';current_value = self.text
 					ToggleButton :
 						text:'SBS'
 						group:'Type_motor'
-						on_release:  if(self.state == 'normal'):self.state='down';current_value = self.text
+						on_release:	 if(self.state == 'normal'):self.state='down';current_value = self.text
 
 					Label :
 						text: 'Name of Motor'
@@ -467,7 +547,7 @@ BoxLayout:
 				size_hint:(1,1)
 				FileChooserIconView:
 					id:filechooser1
-					path : "/home/pi/Documents/Application_V_0_1/Application_V_0_1/Motors_Database"
+					path : "./"
 					
 				GridLayout:
 					rows : 1

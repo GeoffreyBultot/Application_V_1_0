@@ -117,7 +117,7 @@ class ManualScreen(Screen):
 		value /= ( TABLE_CONVERSION[nameTM] ) 
 		value = int(value)
 		return value
-	def LoadFileToModify(self,selection):
+	def LoadFile(self,selection):
 		
 		#self.ids.file_choosen_input.text = selection[0]
 		MotorFile = selection[0]

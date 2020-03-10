@@ -33,8 +33,8 @@ from kivy.config import Config
 import configparser
 import time
 Config.set('graphics', 'resizable', False)
-Config.set('graphics', 'width', '800')
-Config.set('graphics', 'height', '480')
+Config.set('graphics', 'width', '800')#'1024')
+Config.set('graphics', 'height', '400')#'600')
 
 
 filename = r"Config.txt"
@@ -90,7 +90,7 @@ class TestBenchApp(App):
 		sm.add_widget(SettingsScreen(self,name='SettingsScreen'))
 		sm.transition = SlideTransition()
 		Clock.schedule_interval(sm.current_screen.update, 1.0/60.0)
-		
+		self.changeScreen(2)
 		
 	def changeScreen(self,idx_Screen):
 
