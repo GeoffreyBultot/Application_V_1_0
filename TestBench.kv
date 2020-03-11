@@ -73,6 +73,7 @@ BoxLayout:
 				FileChooserIconView:
 					id:filechooser_setup_auto
 					path : "./"
+					filters: ['*.csv']
 					
 				GridLayout:
 					rows : 1
@@ -262,6 +263,7 @@ BoxLayout:
 				FileChooserIconView:
 					id:filechooser1
 					path : "./"
+					filters: ['*.csv']
 					
 				GridLayout:
 					rows : 1
@@ -321,7 +323,7 @@ BoxLayout:
 	name: 'SettingsScreen'
 	GridLayout:
 		rows : 2
-		cols : 2
+		cols : 3
 		pos_hint:{'center_x':0.75, 'center_y':0.30}
 		spacing : (50,50)
 		Button:
@@ -339,6 +341,13 @@ BoxLayout:
 			background_down:	"Datas/edit_file.png"
 			size_hint: None,None
 			size: 128, 128
+			
+		Button:
+			on_release: Popup_Add_Script.open()
+			background_normal:	"Datas/scripting_img.png"
+			background_down:	"Datas/scripting_img.png"
+			size_hint: None,None
+			size: 128, 128
 		
 		Button:
 			background_normal:	"Datas/delete_file.png"
@@ -352,6 +361,13 @@ BoxLayout:
 			size_hint: None,None
 			size: 128, 128
 			
+		
+		
+		Button:
+			background_normal:	"Datas/savedir_file.png"
+			background_down:	"Datas/savedir_file.png"
+			size_hint: None,None
+			size: 128, 128
 	BoxLayout:
 		id: bl
 		p_add_mot : Popup_Add_Motor.__self__
@@ -386,7 +402,7 @@ BoxLayout:
 						text:'SBS'
 						group:'Type_motor'
 						on_release:	 if(self.state == 'normal'):self.state='down';current_value = self.text
-
+						
 					Label :
 						text: 'Name of Motor'
 					TextInput:
@@ -432,6 +448,161 @@ BoxLayout:
 					size_hint: None, None
 					pos : (100,75)
 					on_release: root.AddMotor(self.parent.current_value, AddMotor_Name.text,AddMotor_MaxI.text, AddMotor_MaxU.text,AddMotor_MaxP.text,AddMotor_MaxSpeed.text,"add");Popup_Add_Motor.dismiss()
+
+						
+	BoxLayout:
+		id: bl_pop_add_script
+		p_add_script : Popup_Add_Script.__self__
+		Popup:
+			id: Popup_Add_Script
+			title: "Add Automatic Script"
+			size_hint:(.55, .8)
+			on_parent:
+				if self.parent == bl_pop_add_script: self.parent.remove_widget(self)
+			BoxLayout:
+				current_value_auto_cfg:'U_MIN_TO_U_MAX'
+				GridLayout:
+					rows : 2
+					cols : 3
+					col_default_width : 130
+					col_force_default : True
+					row_default_height : 30
+					row_force_default : True
+					spacing : (10,20)
+					
+					ToggleButton :
+						text:'Umin->Umax'
+						group:'Type_Caract'
+						state : 'down'
+						on_release:	if(self.state == 'normal'):self.state='down'
+						on_release:	self.parent.parent.current_value_auto_cfg = 'U_MIN_TO_U_MAX'
+						on_release:	root.updateAddScriptComponents('U_MIN_TO_U_MAX')
+					ToggleButton :
+						text:'cr=f(v) u=cst'
+						group:'Type_Caract'
+						on_release:	if(self.state == 'normal'):self.state='down'
+						on_release:	self.parent.parent.current_value_auto_cfg = 'C_FCT_SP_U_CST'
+						on_release:	root.updateAddScriptComponents('C_FCT_SP_U_CST')
+					Button:
+						text:"MotorFile..."
+						on_release:Automatic_Popup_Choose_File_cfg.open()
+					ToggleButton :
+						text:'u=f(v) cr=cst'
+						group:'Type_Caract'
+						on_release:	if(self.state == 'normal'):self.state='down'
+						on_release:	self.parent.parent.current_value_auto_cfg = 'U_FCT_SP_C_CST'
+						on_release:	root.updateAddScriptComponents('U_FCT_SP_C_CST')
+					ToggleButton :
+						text:'v=f(u) c=cst'
+						group:'Type_Caract'
+						on_release:	if(self.state == 'normal'):self.state='down'
+						on_release:	self.parent.parent.current_value_auto_cfg = 'SP_FCT_U_C_CST'
+						on_release:	root.updateAddScriptComponents('SP_FCT_U_C_CST')
+				FloatLayout:
+					
+					size_hint : None,None
+					size:self.parent.size
+					GridLayout:
+						rows : 1
+						cols : 6
+						col_default_width : 60
+						col_force_default : True
+						row_default_height : 30
+						row_force_default : True
+						pos_hint: {'top': .72,'right':1}
+						Label:
+							id:lbl_AddScript_P1
+							text : 'Umin'
+						TextInput:
+							id: txtInput_AddScript_P1
+							input_filter:'float'
+							hint_text: "[A] - Number only"
+						Label:
+							id:lbl_AddScript_P2
+							text : 'Umax'
+						TextInput:
+							id: txtInput_AddScript_P2
+							input_filter:'float'
+							hint_text: "[A] - Number only"
+						Label:
+							id:lbl_AddScript_CST
+							text : ''
+						TextInput:
+							id: txtInput_AddScript_CST
+							input_filter:'float'
+							hint_text: "[A] - Number only"
+							
+						
+					TextInput:
+						id: txtInput_Script_preparation_File
+						hint_text: "Tests"
+						background_color: (.5,.5,.5,1)
+						size_hint_x : .7
+						size_hint_y : .5
+						
+						pos_hint: {'top': .5,'right':self.size_hint_x}
+						readonly: True
+						multiline: True
+					Button:
+						id:btnAdd_ScriptCfg
+						text: 'Add'
+						size: 75, 50
+						size_hint: None, None						
+						pos_hint: {'top': .55,'right':1}
+						disabled : True
+						on_release : root.AddScenarioToScript(self.parent.parent.current_value_auto_cfg,txtInput_AddScript_P1.text,txtInput_AddScript_P2.text,txtInput_AddScript_CST.text)
+					Button:
+						text: 'Remove'
+						size: 75, 50
+						size_hint: None, None						
+						pos_hint: {'top': .35,'right':1}
+					Button:
+						text: 'Validate'
+						size: 75, 50
+						size_hint: None, None						
+						pos_hint: {'top': .15,'right':1}
+						on_release: root.AddScript('test123')
+	BoxLayout:
+		id:bl_auto_pop_mot_file_cfg
+		p_auto_choose_file:Automatic_Popup_Choose_File_cfg.__self__
+		Popup:
+			id: Automatic_Popup_Choose_File_cfg
+			
+			title: "Choose motor file"
+			size_hint:(.6, .8)
+			on_parent:
+				if self.parent == bl_auto_pop_mot_file_cfg: self.parent.remove_widget(self)
+			BoxLayout:
+				orientation: "vertical"
+				size_hint:(1,1)
+				FileChooserIconView:
+					id:filechooser_auto_motor_cfg
+					path : "./"
+					filters: ['*.csv']
+					
+				GridLayout:
+					rows : 1
+					cols : 2
+					spacing : (15,0)
+					size:(150,50)
+					size_hint:None,None
+					pos_hint:{'center_x':0.8, 'center_y':0.5}
+
+					Button:
+						text: 'Load'
+						size: 75, 50
+						size_hint: None, None
+						on_release: root.LoadFileMotorToAutoCfg(filechooser_auto_motor_cfg.selection);Automatic_Popup_Choose_File_cfg.dismiss()
+		
+					Button:
+						text: 'Cancel'
+						size: 75, 50
+						size_hint: None, None
+						on_release: Automatic_Popup_Choose_File_cfg.dismiss()
+	
+	
+	
+	
 	BoxLayout:
 		id: bl2
 		p_edit_motor:Popup_Edit_Motor.__self__
@@ -548,6 +719,7 @@ BoxLayout:
 				FileChooserIconView:
 					id:filechooser1
 					path : "./"
+					filters: ['*.csv']
 					
 				GridLayout:
 					rows : 1
@@ -555,6 +727,7 @@ BoxLayout:
 					spacing : (15,0)
 					size:(150,50)
 					size_hint:None,None
+					hint_pos : (None,0)
 					pos_hint:{'center_x':0.8, 'center_y':0.5}
 
 					Button:

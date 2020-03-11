@@ -79,26 +79,27 @@ class AutomaticScreen(Screen):
 			txtBox_Measures.text += "voltage : " + str(i)+"V  "+"Current : " +str(i)+"\n"
 		
 	def LoadSetUpFile(self,selection):
-		print(selection)
-		#self.ids.file_choosen_input.text = selection[0]
-		SetUpFile = selection[0]
-		#try to open the file. Do nothing if the file doesnt exist
-		try:
-				file = open(SetUpFile, 'r')
-				file.close()
-		except IOError:
-			return
-		INV_AUTO_TESTS_IDS = {v: k for k, v in AUTO_TESTS_IDS.items()}
-		print(INV_AUTO_TESTS_IDS)
-		with open(SetUpFile, 'r', newline='') as file:
-			reader = csv.reader(file, delimiter=';')
-			for row in reader:
-				#for(i in range(0, len(INV_AUTO_TESTS_IDS)):
-				if(row[0] in AUTO_TESTS_IDS):
-					
-					print(AUTO_TESTS_IDS[row[0]])
-					
-		
+		if(len(selection)):
+			print(selection)
+			#self.ids.file_choosen_input.text = selection[0]
+			SetUpFile = selection[0]
+			#try to open the file. Do nothing if the file doesnt exist
+			try:
+					file = open(SetUpFile, 'r')
+					file.close()
+			except IOError:
+				return
+			INV_AUTO_TESTS_IDS = {v: k for k, v in AUTO_TESTS_IDS.items()}
+			print(INV_AUTO_TESTS_IDS)
+			with open(SetUpFile, 'r', newline='') as file:
+				reader = csv.reader(file, delimiter=';')
+				for row in reader:
+					#for(i in range(0, len(INV_AUTO_TESTS_IDS)):
+					if(row[0] in AUTO_TESTS_IDS):
+						
+						print(AUTO_TESTS_IDS[row[0]])
+						
+			
 		
 	def update(self, dt):
 		tab_TM = self.app.Table_Tm_Reg

@@ -64,33 +64,13 @@ class ManualScreen(Screen):
 									 row_default_height=30, row_force_default=True, 
 									 pos = (400,-20),spacing = [5,10])
 
-		'''
-		self.btnSetSpeed =Button(text="Set Speed", on_release = self.btnSetting_Release)#"TC_Set_Speed")
-		self.btnSetSpeed.id = "TC_Set_Speed"
-		self.btnSetUmotor=Button(text="Set Umotor", on_release = self.btnSetting_Release)
-		self.btnSetUmotor.id = "TC_Set_Umotor"
-		self.btnSetCouple=Button(text="Set Couple", on_release = self.btnSetting_Release)
-		self.btnSetCouple.id = "TC_Set_Couple"
-		self.txtbxSetSpeed	= TextInput(text='0', input_filter='float')
-		self.txtbxSetUmotor = TextInput(text='0', input_filter='float')
-		self.txtbxSetCouple = TextInput(text='0', input_filter='float')
-		
-		
-		settings_layout.add_widget(self.txtbxSetSpeed)
-		settings_layout.add_widget(self.btnSetSpeed)
-		settings_layout.add_widget(self.txtbxSetUmotor)
-		settings_layout.add_widget(self.btnSetUmotor)
-		settings_layout.add_widget(self.txtbxSetCouple)
-		settings_layout.add_widget(self.btnSetCouple)
-
-		'''
 
 		layout.add_widget(settings_layout)
 		layout.add_widget(box_Gauges)
 
 	def btn_Set_Manual_Release(self, TC_Man):
 		setting = Manual_TC_dict[TC_Man]
-
+	
 		if(Manual_TC_dict['Manual_TC_Set_Umotor'] == setting):
 			value = self.FloatToRaw(self.ids.txtIn_Manual_U.text,'TM_U_MOT')
 			self.app.labtooTestBench.SendTC(TC_TABLE_ID['TC_SET_U_MOT'],value)
@@ -118,43 +98,43 @@ class ManualScreen(Screen):
 		value = int(value)
 		return value
 	def LoadFile(self,selection):
-		
-		#self.ids.file_choosen_input.text = selection[0]
-		MotorFile = selection[0]
-		#try to open the file. Do nothing if the file doesnt exist
-		try:
-				file = open(MotorFile, 'r')
-				file.close()
-		except IOError:
-			return
-		with open(MotorFile, 'r', newline='') as file:
-			reader = csv.reader(file, delimiter=';')
-			for row in reader:
-				if(row[0] == "Name"):
-					self.ids.lbl_man_Name.text = "Name : "+row[1]
-					#self.ids.Manual_S.text = row[1]
-				if(row[0] == "Type"):
-					self.ids.lbl_man_Type.text = "Type : "+row[1]
-				if(row[0] == "UMotorMax"):
-					self.ids.manual_max_U.text = "Max :\n"+row[1]+"V"
-					self.ids.slider_man_U.max = float(row[1])
-					self.gaugeU_Motor.maxvalue = float(row[1])
-					
-				if(row[0] == "IMotorMax"):
-					self.ids.manual_max_I.text = "Max :\n"+row[1]+"A"
-					self.ids.slider_man_I.max = float(row[1])
-					self.gaugeI_Motor.maxvalue = float(row[1])
-					
-				if(row[0] == "PMotorMax"):
-					pass#self.ids.Manual_P.text = row[1]
-					
-				if(row[0] == "SpeedMax"):
-					self.ids.manual_max_S.text = "Max :\n"+row[1]+"t/m"
-					self.ids.slider_man_S.max = float(row[1])
-					self.gauge_Speed.maxvalue = float(row[1])
-					
-				self.ids.manual_max_C.text =  "Max :\n"+str(self.app.AbsoluteMaxRatings['C_COUPLE_MAX'])+" Nm"
-				self.ids.slider_man_C.max = self.app.AbsoluteMaxRatings['C_COUPLE_MAX']
+		if(len(selection)):
+			#self.ids.file_choosen_input.text = selection[0]
+			MotorFile = selection[0]
+			#try to open the file. Do nothing if the file doesnt exist
+			try:
+					file = open(MotorFile, 'r')
+					file.close()
+			except IOError:
+				return
+			with open(MotorFile, 'r', newline='') as file:
+				reader = csv.reader(file, delimiter=';')
+				for row in reader:
+					if(row[0] == "Name"):
+						self.ids.lbl_man_Name.text = "Name : "+row[1]
+						#self.ids.Manual_S.text = row[1]
+					if(row[0] == "Type"):
+						self.ids.lbl_man_Type.text = "Type : "+row[1]
+					if(row[0] == "UMotorMax"):
+						self.ids.manual_max_U.text = "Max :\n"+row[1]+"V"
+						self.ids.slider_man_U.max = float(row[1])
+						self.gaugeU_Motor.maxvalue = float(row[1])
+						
+					if(row[0] == "IMotorMax"):
+						self.ids.manual_max_I.text = "Max :\n"+row[1]+"A"
+						self.ids.slider_man_I.max = float(row[1])
+						self.gaugeI_Motor.maxvalue = float(row[1])
+						
+					if(row[0] == "PMotorMax"):
+						pass#self.ids.Manual_P.text = row[1]
+						
+					if(row[0] == "SpeedMax"):
+						self.ids.manual_max_S.text = "Max :\n"+row[1]+"t/m"
+						self.ids.slider_man_S.max = float(row[1])
+						self.gauge_Speed.maxvalue = float(row[1])
+						
+					self.ids.manual_max_C.text =  "Max :\n"+str(self.app.AbsoluteMaxRatings['C_COUPLE_MAX'])+" Nm"
+					self.ids.slider_man_C.max = self.app.AbsoluteMaxRatings['C_COUPLE_MAX']
 
 	def update(self, dt):
 		tab_TM = self.app.Table_Tm_Reg

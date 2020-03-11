@@ -90,10 +90,9 @@ class TestBenchApp(App):
 		sm.add_widget(SettingsScreen(self,name='SettingsScreen'))
 		sm.transition = SlideTransition()
 		Clock.schedule_interval(sm.current_screen.update, 1.0/60.0)
-		self.changeScreen(2)
+		#self.changeScreen(2)
 		
 	def changeScreen(self,idx_Screen):
-
 		print(self.Table_Tm_Reg)
 		sm = self.root.ids.sm
 		Clock.unschedule(sm.current_screen.update)

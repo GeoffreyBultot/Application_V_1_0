@@ -1,11 +1,12 @@
 
 
 
-AUTO_TESTS_IDS={	'C_FCT_SP':	0,
-								'SP_FCT_P':	1,
-								'SP_FCT_U':	2,
-								'U_FCT_I':		3,
-								'I_U_FCT_C':	4,}
+AUTO_TESTS_IDS={	'U_MIN_TO_U_MAX':	1, #COUPLE 		FONCTION DE LA VITESSE 	A TENSION CONSTANTE
+								'C_FCT_SP_U_CST':	2, #COUPLE 		FONCTION DE LA VITESSE 	A TENSION CONSTANTE
+								'U_FCT_SP_C_CST':	3, #TENSION 	FONCTION DE LA VITESSE 	A COUPLE CONSTANT
+								'SP_FCT_U_C_CST':	4, #VITESSE 	FONCTION DE LA TENSION	A COUPLE CONSTANT
+								'U_FCT_I':		5,
+								'I_U_FCT_C':	6,}
 TM_dict ={
 	}
 Manual_TC_dict = {
@@ -48,12 +49,12 @@ TC_TABLE_ID = {	'TC_SET_MODE':				0,
 #conversion : 
 #when TM received : Raw value * factor = real value
 #To send TC parameter : Real value / factor = raw_value
-TABLE_CONVERSION = {	'TM_CR_MOT'		:	0.00724,#0.039*0.186
-									'TM_U_MOT'		:	0.037875,#3.3/4095/0.0223),
-									'TM_I_MOT'		:	0.000117875,#0.00236,#3.3/4095/6.82927/0.05)
-									'TM_SP_MOT'		:	0.1,#NOT REAL
-									'TM_U_BRAKE'	:	0.037875,#
-									'TM_I_BRAKE'		:	0.00236}#
+TABLE_CONVERSION = {	'TM_CR_MOT'	:	0.00724,#0.039*0.186
+										'TM_U_MOT'		:	0.037875,#3.3/4095/0.0223),
+										'TM_I_MOT'		:	0.000117875,#0.00236,#3.3/4095/6.82927/0.05)
+										'TM_SP_MOT'		:	0.1,#NOT REAL
+										'TM_U_BRAKE'	:	0.037875,#
+										'TM_I_BRAKE'		:	0.00236}#
 									
 									
 									

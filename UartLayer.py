@@ -93,23 +93,3 @@ class UartLayer(object):
 					time.sleep(0.1)
 					
 					
-					
-				#self.app.Table_Tm_Reg = self.TM_list
-				# if( (resp[0]==0XC5)&(resp[2]==0X80)&(resp[1]==16) ):
-					# self.rawCouple =resp[3]+((resp[4])<<8)
-					# self.rawUMotor = resp[5]+((resp[6])<<8)
-					# self.rawIMotor = resp[7]+((resp[8])<<8)
-					# self.rawUBrake = resp[9]+((resp[10])<<8)
-					# self.rawIBrake = resp[11]+((resp[12])<<8)
-					# self.rawSpeed = resp[13]+((resp[14])<<8)
-			#p_data = self.spi.xfer2([0x40,0x00,0x00,0x00])#self.spi.readbytes(1)
-			# if(p_data!=[0]):
-				# p_data = p_data[0]
-				# print(p_data)
-				# self.testNumber = (p_data)
-				# p_data=None
-				
-				
-					
-					
-					
