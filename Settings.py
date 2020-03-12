@@ -32,6 +32,9 @@ class SettingsScreen(Screen):
 		self.loadedMotorSPMax = 0
 	def AddScript(self,title):
 		print(self.Automatic_Script_Content)
+		
+		
+		
 		ScriptFile = ScriptsDatabase+"/"+title+".csv"
 		try:
 			file = open(ScriptFile, 'r')
@@ -49,9 +52,7 @@ class SettingsScreen(Screen):
 		
 	def AddScenarioToScript(self, TypeScenario, P1 , P2 , CST):
 		
-		lineScriptFile = TypeScenario+";"+P1+";"+P2+";"+CST
-		
-		
+		lineScriptFile = [TypeScenario,P1,P2,CST]
 		
 		CRmax = self.app.AbsoluteMaxRatings['C_COUPLE_MAX']
 		if( (P1 != "") & (P2 != "") ):

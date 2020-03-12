@@ -26,9 +26,46 @@ from kivy.uix.button import Button
 from kivy.uix.slider import Slider
 from Gauge import Gauge
 from dictionary import *
+from threading import Thread
 
 import csv
 import os
+
+thread_auto_running = False
+tb_Scenarios = []
+
+class thread_auto(Thread):
+	'''
+	This thread will execute un backgroud the automatic diagram and will update the MMI at the same time
+	'''
+	def __init__(self,app):
+		Thread.__init__(self)		 #init the mother thread
+		self.app=app
+		self.pas = 0.1 #refresh time for the loading bars
+	def run(self):
+		'''
+		loop of the thread 
+		'''
+		global thread_auto_running			   #receive the boolean that command the stop of the thread
+		while(thread_auto_running):
+			print(tb_Scenarios)
+			
+		Thread.__init__(self)
+		# while(self.frame.actual_step < len(self.frame.list_diagram_buttons) and not stop_thread_auto):  #while were are not at the end of the sequence or the order to stop isn't given
+			# if(not stop_thread_auto): 
+				# if(self.frame.actual_step<=10):		  #from 0 to ten, diagram step are called only once
+					# if (current_frame == "auto") : #don t update graphical components of frame automatic while not in this frame
+						# self.frame.list_diagram_buttons[self.frame.actual_step-1].config(bg = 'grey')	  #reset the precedent step
+				# self.fct_in_progress(self.frame.actual_step)	  #action of the step
+				# time.sleep(0.5)	#used to slow the executio of the diagram
+				# if(not stop_thread_auto):	 
+					# if(self.frame.actual_step>=14 ):		  #make the last steps of the diagram loop
+						# if (current_frame == "auto") : #don t update graphical components of frame automatic while not in this frame
+							# self.frame.list_diagram_buttons[self.frame.actual_step-1].config(bg = 'grey')	  #reset them
+							# self.frame.list_diagram_buttons[self.frame.actual_step-2].config(bg = 'grey')
+							# self.frame.list_diagram_buttons[self.frame.actual_step-3].config(bg = 'grey')
+						# self.frame.actual_step = 10	  #overwrite the actual step 
+		
 
 class AutomaticScreen(Screen):
 	i = 0
@@ -40,7 +77,8 @@ class AutomaticScreen(Screen):
 		self.add_widget(layout)
 
 		self.app = app
-
+		self.Automatic_Thread=thread_auto(self.app)
+		
 		with self.canvas.before:
 			Color(0.9, 0.9, 0.9, 1) # green; colors range from 0-1 instead of 0-255
 			#self.rect = Rectangle(size=(1024,600),source='Datas/background.jpg')
@@ -68,19 +106,30 @@ class AutomaticScreen(Screen):
 		layout.add_widget(box_Gauges)
 	
 	def Start_Stop(self):
+		global thread_auto_running
+		global tb_Scenarios
+		txtBox_Setpoints = self.ids.txtIn_Automatic_SetPoint	 #get txtbox by ID
+		txtBox_Measures = self.ids.txtIn_Automatic_Measures	 #get txtbox by ID
 		
-		txtBox_Setpoints = self.ids.txtIn_Automatic_SetPoint
-		txtBox_Measures = self.ids.txtIn_Automatic_Measures
-		
-		
-		
-		
+		if(self.ids.btn_Auto_START_STOP.text == "STOP"):
+			self.ids.btn_Auto_LOAD.disabled = False
+			self.ids.btn_Auto_START_STOP.text = "START"
+			thread_auto_running = False
+			self.Automatic_Thread.join()
+		else:
+			self.ids.btn_Auto_LOAD.disabled = True
+			self.ids.btn_Auto_START_STOP.text = "STOP"
+			thread_auto_running = True
+			self.Automatic_Thread.start()
+			
 		for i in range(0,10):
 			txtBox_Measures.text += "voltage : " + str(i)+"V  "+"Current : " +str(i)+"\n"
 		
 	def LoadSetUpFile(self,selection):
+		global tb_Scenarios
+		tb_Scenarios = []
 		if(len(selection)):
-			print(selection)
+			tb_Scenarios = []
 			#self.ids.file_choosen_input.text = selection[0]
 			SetUpFile = selection[0]
 			#try to open the file. Do nothing if the file doesnt exist
@@ -90,17 +139,21 @@ class AutomaticScreen(Screen):
 			except IOError:
 				return
 			INV_AUTO_TESTS_IDS = {v: k for k, v in AUTO_TESTS_IDS.items()}
-			print(INV_AUTO_TESTS_IDS)
+			
 			with open(SetUpFile, 'r', newline='') as file:
 				reader = csv.reader(file, delimiter=';')
 				for row in reader:
+					print(row)
 					#for(i in range(0, len(INV_AUTO_TESTS_IDS)):
+					print(row[0])
 					if(row[0] in AUTO_TESTS_IDS):
-						
-						print(AUTO_TESTS_IDS[row[0]])
-						
-			
+						tb_Scenarios.append(row)
 		
+		if(len(tb_Scenarios) > 0):
+			self.ids.btn_Auto_START_STOP.disabled= False
+		else:
+			self.ids.btn_Auto_START_STOP.disabled= True
+					
 	def update(self, dt):
 		tab_TM = self.app.Table_Tm_Reg
 		#print(tab_TM)
