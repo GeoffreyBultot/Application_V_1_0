@@ -35,6 +35,7 @@ BoxLayout:
 			disabled : True
 		
 		Label:
+			id: lbl_Automatic_Set_Point
 			text: "Test : No test in progress"
 			pos:-300,50
 			
@@ -464,6 +465,7 @@ BoxLayout:
 			BoxLayout:
 				current_value_auto_cfg:'U_MIN_TO_U_MAX'
 				GridLayout:
+					id:gridlayout_cfg_File_scripts
 					rows : 2
 					cols : 3
 					col_default_width : 130
@@ -500,6 +502,9 @@ BoxLayout:
 						on_release:	if(self.state == 'normal'):self.state='down'
 						on_release:	self.parent.parent.current_value_auto_cfg = 'SP_FCT_U_C_CST'
 						on_release:	root.updateAddScriptComponents('SP_FCT_U_C_CST')
+					TextInput:
+						id: txtInput_NameFileScript
+						hint_text: "FileName"
 				FloatLayout:
 					
 					size_hint : None,None
@@ -537,7 +542,7 @@ BoxLayout:
 						
 					TextInput:
 						id: txtInput_Script_preparation_File
-						hint_text: "Tests"
+						hint_text: "Values in the script file"
 						background_color: (.5,.5,.5,1)
 						size_hint_x : .7
 						size_hint_y : .5
@@ -558,12 +563,13 @@ BoxLayout:
 						size: 75, 50
 						size_hint: None, None						
 						pos_hint: {'top': .35,'right':1}
+						on_release : root.RemoveScenarioToScript()
 					Button:
 						text: 'Validate'
 						size: 75, 50
 						size_hint: None, None						
 						pos_hint: {'top': .15,'right':1}
-						on_release: root.AddScript('test123')
+						on_release: root.AddScript()
 	BoxLayout:
 		id:bl_auto_pop_mot_file_cfg
 		p_auto_choose_file:Automatic_Popup_Choose_File_cfg.__self__

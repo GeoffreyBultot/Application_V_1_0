@@ -16,7 +16,6 @@ from kivy.uix.screenmanager import Screen, ScreenManager, FadeTransition
 from kivy.clock import Clock
 from kivy.lang import Builder
 from kivy.graphics import Color, Rectangle, Canvas
-
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.gridlayout import GridLayout
@@ -33,38 +32,172 @@ import os
 
 thread_auto_running = False
 tb_Scenarios = []
+num_of_scenarios = len(tb_Scenarios)
+idx_current_scenario = 0
+current_scenario = []
+textFor_txtBox_Measures = ""
+textFor_txtBox_SetPoints = ""
+textFor_lbl_SetPoints = "Test : No test in progress"
 
 class thread_auto(Thread):
 	'''
 	This thread will execute un backgroud the automatic diagram and will update the MMI at the same time
 	'''
-	def __init__(self,app):
+	
+		
+	def __init__(self,screen):
 		Thread.__init__(self)		 #init the mother thread
-		self.app=app
+		self.screen=screen
 		self.pas = 0.1 #refresh time for the loading bars
+		
+		num_of_scenarios = len(tb_Scenarios)
+		idx_current_scenario = 0
+		current_scenario = []
+		
 	def run(self):
 		'''
 		loop of the thread 
 		'''
 		global thread_auto_running			   #receive the boolean that command the stop of the thread
-		while(thread_auto_running):
-			print(tb_Scenarios)
+		global num_of_scenarios
+		global idx_current_scenario
+		global current_scenario
+		
+		num_of_scenarios = len(tb_Scenarios)
+		idx_current_scenario = 0
+		current_scenario = []
+		
+		while( (idx_current_scenario < num_of_scenarios) & (thread_auto_running) ):
+			current_scenario = tb_Scenarios[idx_current_scenario]
+			if(current_scenario[0] in AUTO_TESTS_IDS):
+				scenario = current_scenario[0]
+				P1 = float(current_scenario[1])
+				P2 = float(current_scenario[2])
+				print(current_scenario[3])
+				CST = float(current_scenario[3])
+				self.exectute_scenario(scenario,P1,P2,CST)
+			idx_current_scenario += 1
 			
-		Thread.__init__(self)
-		# while(self.frame.actual_step < len(self.frame.list_diagram_buttons) and not stop_thread_auto):  #while were are not at the end of the sequence or the order to stop isn't given
-			# if(not stop_thread_auto): 
-				# if(self.frame.actual_step<=10):		  #from 0 to ten, diagram step are called only once
-					# if (current_frame == "auto") : #don t update graphical components of frame automatic while not in this frame
-						# self.frame.list_diagram_buttons[self.frame.actual_step-1].config(bg = 'grey')	  #reset the precedent step
-				# self.fct_in_progress(self.frame.actual_step)	  #action of the step
-				# time.sleep(0.5)	#used to slow the executio of the diagram
-				# if(not stop_thread_auto):	 
-					# if(self.frame.actual_step>=14 ):		  #make the last steps of the diagram loop
-						# if (current_frame == "auto") : #don t update graphical components of frame automatic while not in this frame
-							# self.frame.list_diagram_buttons[self.frame.actual_step-1].config(bg = 'grey')	  #reset them
-							# self.frame.list_diagram_buttons[self.frame.actual_step-2].config(bg = 'grey')
-							# self.frame.list_diagram_buttons[self.frame.actual_step-3].config(bg = 'grey')
-						# self.frame.actual_step = 10	  #overwrite the actual step 
+	def exectute_scenario(self,scenario,P1,P2,CST):
+		global textFor_txtBox_SetPoints
+		global textFor_txtBox_Measures
+		global textFor_lbl_SetPoints
+		
+		textFor_lbl_SetPoints = "Test : "
+		if(scenario == 'U_MIN_TO_U_MAX'):
+			textFor_lbl_SetPoints += "Umin to Umax"
+			self.scenario_U_MIN_TO_U_MAX(P1,P2,CST)
+			
+		elif(scenario == 'C_FCT_SP_U_CST'):
+			textFor_lbl_SetPoints += "Couple = fct(speed) @ Umot = "+(str(round(CST,2)))+"V"
+			self.scenario_C_FCT_SP_U_CST(P1,P2,CST)
+				
+		elif(scenario == 'U_FCT_SP_C_CST'):
+			textFor_lbl_SetPoints += "Umot = fct(speed) @ Couple = "+(str(round(CST,2)))+"Nm"
+			self.scenario_U_FCT_SP_C_CST(P1,P2,CST)
+			
+		elif(scenario == 'SP_FCT_U_C_CST'):
+			textFor_lbl_SetPoints += "Speed = fct(Umot) @ Couple = "+(str(round(CST,2)))+"Nm"
+			self.scenario_SP_FCT_U_C_CST(P1,P2,CST)
+			
+	
+	def scenario_U_MIN_TO_U_MAX(self,P1,P2,CST):
+		
+		global textFor_txtBox_SetPoints
+		global textFor_txtBox_Measures
+		interval = (P2-P1)/10
+		interval = round(interval,2)
+		currentU = round(P1,2)
+		while( (currentU < (P2+interval) ) & (thread_auto_running) ):
+			textFor_txtBox_SetPoints += "Umot set : "+str(currentU)+" V \n"
+			self.screen.app.labtooTestBench.SetUmot(currentU)
+			
+			U =	round(self.screen.gaugeU_Motor.value,2)
+			V =	round(self.screen.gauge_Speed.value,2) 
+			I =	round(self.screen.gaugeI_Motor.value,2)
+			textFor_txtBox_Measures += "U = "	+ str(U)	+ "V  "
+			textFor_txtBox_Measures += "v = "	+ str(V)	+ "tr/min  "
+			textFor_txtBox_Measures += "I = "	+ str(I) 	+ "A \n"
+			
+			currentU += interval
+			currentU = round(currentU,2)
+			time.sleep(0.5)
+			
+	def scenario_C_FCT_SP_U_CST(self,P1,P2,CST):
+		global textFor_txtBox_SetPoints
+		global textFor_txtBox_Measures
+		interval = (P2-P1)/10
+		interval = round(interval,2)
+		currentCR = round(P1,2)
+		
+		while( (currentCR < (P2+interval) ) & (thread_auto_running) ):
+			textFor_txtBox_SetPoints += "Couple set : "+str(currentCR)+" Nm\n"
+			
+			self.screen.app.labtooTestBench.SetCrMot(currentCR)
+			self.screen.app.labtooTestBench.SetUmot(CST)
+			
+			C =	round(self.screen.gauge_Couple.value,2)
+			V =	round(self.screen.gauge_Speed.value,2) 
+			I =	round(self.screen.gaugeI_Motor.value,2)
+			U =	round(self.screen.gaugeU_Motor.value,2)
+			textFor_txtBox_Measures += "Cr = "	+ str(C)	+ "Nm  "
+			textFor_txtBox_Measures += "v = "	+ str(V)	+ "tr/min  "
+			textFor_txtBox_Measures += "I = "	+ str(I) 	+ "A \n"
+			textFor_txtBox_Measures += "U = "	+ str(I) 	+ "V \n"
+			
+			currentCR += interval
+			currentCR = round(currentCR,2)
+			time.sleep(0.5)
+		
+	def scenario_U_FCT_SP_C_CST(self,P1,P2,CST):
+		global textFor_txtBox_SetPoints
+		global textFor_txtBox_Measures
+		interval = (P2-P1)/10
+		interval = round(interval,2)
+		currentSP = round(P1,2)
+		while( (currentSP < (P2+interval) ) & (thread_auto_running) ):
+			textFor_txtBox_SetPoints += "Speed set : "+str(currentSP)+"tr/min \n"
+			
+			self.screen.app.labtooTestBench.SetSpeedMot(currentSP)
+			self.screen.app.labtooTestBench.SetCrMot(CST)
+			
+			U =	round(self.screen.gaugeU_Motor.value,2)
+			V =	round(self.screen.gauge_Speed.value,2) 
+			I =	round(self.screen.gaugeI_Motor.value,2)
+			textFor_txtBox_Measures += "U = "	+ str(U)	+ "V  "
+			textFor_txtBox_Measures += "v = "	+ str(V)	+ "tr/min  "
+			textFor_txtBox_Measures += "I = "	+ str(I) 	+ "A \n"
+			
+			currentSP += interval
+			currentSP = round(currentSP,2)
+			time.sleep(0.5)
+				
+	def scenario_SP_FCT_U_C_CST(self,P1,P2,CST):
+		global textFor_txtBox_SetPoints
+		global textFor_txtBox_Measures
+		interval = (P2-P1)/10
+		interval = round(interval,2)
+		currentU = round(P1,2)
+		while( (currentU < (P2+interval) ) & (thread_auto_running) ):
+			textFor_txtBox_SetPoints += "Voltage set : "+str(currentU)+" V\n"
+			
+			
+			self.screen.app.labtooTestBench.SetUmot(currentU)
+			self.screen.app.labtooTestBench.SetCrMot(CST)
+			
+			C =	round(self.screen.gauge_Couple.value,2)
+			U =	round(self.screen.gaugeU_Motor.value,2)
+			V =	round(self.screen.gauge_Speed.value,2) 
+			I =	round(self.screen.gaugeI_Motor.value,2)
+			textFor_txtBox_Measures += "Cr = "	+ str(C)	+ "Nm  "
+			textFor_txtBox_Measures += "U = "	+ str(U)	+ "V  "
+			textFor_txtBox_Measures += "v = "	+ str(V)	+ "tr/min  "
+			textFor_txtBox_Measures += "I = "	+ str(I) 	+ "A \n"
+			
+			currentU += interval
+			currentU = round(currentU,2)
+			time.sleep(0.5)
+				
 		
 
 class AutomaticScreen(Screen):
@@ -108,23 +241,27 @@ class AutomaticScreen(Screen):
 	def Start_Stop(self):
 		global thread_auto_running
 		global tb_Scenarios
-		txtBox_Setpoints = self.ids.txtIn_Automatic_SetPoint	 #get txtbox by ID
-		txtBox_Measures = self.ids.txtIn_Automatic_Measures	 #get txtbox by ID
+		global textFor_txtBox_SetPoints
+		global textFor_txtBox_Measures
+		global textFor_lbl_SetPoints
 		
 		if(self.ids.btn_Auto_START_STOP.text == "STOP"):
+			thread_auto_running = False
 			self.ids.btn_Auto_LOAD.disabled = False
 			self.ids.btn_Auto_START_STOP.text = "START"
-			thread_auto_running = False
-			self.Automatic_Thread.join()
+			textFor_lbl_SetPoints = "Test : No test in progress"
+			self.Automatic_Thread.join(0)
+			#todo: arreter le moteur et le frein
 		else:
 			self.ids.btn_Auto_LOAD.disabled = True
 			self.ids.btn_Auto_START_STOP.text = "STOP"
 			thread_auto_running = True
+			self.Automatic_Thread =thread_auto(self)
 			self.Automatic_Thread.start()
+			textFor_txtBox_SetPoints = ""
+			textFor_txtBox_Measures = ""
 			
-		for i in range(0,10):
-			txtBox_Measures.text += "voltage : " + str(i)+"V  "+"Current : " +str(i)+"\n"
-		
+			
 	def LoadSetUpFile(self,selection):
 		global tb_Scenarios
 		tb_Scenarios = []
@@ -134,19 +271,23 @@ class AutomaticScreen(Screen):
 			SetUpFile = selection[0]
 			#try to open the file. Do nothing if the file doesnt exist
 			try:
-					file = open(SetUpFile, 'r')
-					file.close()
+				file = open(SetUpFile, 'r')
+				file.close()
 			except IOError:
+				print(":o")
 				return
 			INV_AUTO_TESTS_IDS = {v: k for k, v in AUTO_TESTS_IDS.items()}
 			
 			with open(SetUpFile, 'r', newline='') as file:
 				reader = csv.reader(file, delimiter=';')
+				
+				
 				for row in reader:
 					print(row)
-					#for(i in range(0, len(INV_AUTO_TESTS_IDS)):
 					print(row[0])
+					#for(i in range(0, len(INV_AUTO_TESTS_IDS)):
 					if(row[0] in AUTO_TESTS_IDS):
+						print(":o")
 						tb_Scenarios.append(row)
 		
 		if(len(tb_Scenarios) > 0):
@@ -155,6 +296,8 @@ class AutomaticScreen(Screen):
 			self.ids.btn_Auto_START_STOP.disabled= True
 					
 	def update(self, dt):
+		global thread_auto_running
+		global textFor_lbl_SetPoints
 		tab_TM = self.app.Table_Tm_Reg
 		#print(tab_TM)
 		raw_couple	= tab_TM[TM_TABLE_ID['TM_CR_MOT']]
@@ -166,8 +309,19 @@ class AutomaticScreen(Screen):
 
 		self.gaugeU_Motor.value		= (raw_U_Motor	*	TABLE_CONVERSION['TM_U_MOT'])#3.3/4095/0.0223)
 		self.gaugeI_Motor.value		= (raw_I_Motor	*	TABLE_CONVERSION['TM_I_MOT'])
-		self.gauge_Speed.value	= (raw_Speed		*	TABLE_CONVERSION['TM_SP_MOT'])
+		self.gauge_Speed.value		= (raw_Speed		*	TABLE_CONVERSION['TM_SP_MOT'])
 		self.gauge_Couple.value		= (raw_couple	*	TABLE_CONVERSION['TM_CR_MOT'])
 		self.gaugeU_Brake.value		= (raw_U_Brake	*	TABLE_CONVERSION['TM_U_BRAKE'])
 		self.gaugeI_brake.value		= (raw_I_Brake	*	TABLE_CONVERSION['TM_I_BRAKE'])
+		#At the end of test, button clickable and and script loadable
+		if( (idx_current_scenario >= num_of_scenarios) & (thread_auto_running == True) ):
+			self.ids.btn_Auto_LOAD.disabled = False
+			self.ids.btn_Auto_START_STOP.text = "START"
+			thread_auto_running = False
+			textFor_lbl_SetPoints = "Test : No test in progress"
+		
+		self.ids.txtIn_Automatic_SetPoint.text = textFor_txtBox_SetPoints
+		self.ids.txtIn_Automatic_Measures.text = textFor_txtBox_Measures
+		self.ids.lbl_Automatic_Set_Point.text = textFor_lbl_SetPoints
+			
 			

@@ -97,6 +97,7 @@ class ManualScreen(Screen):
 		value /= ( TABLE_CONVERSION[nameTM] ) 
 		value = int(value)
 		return value
+	
 	def LoadFile(self,selection):
 		if(len(selection)):
 			#self.ids.file_choosen_input.text = selection[0]

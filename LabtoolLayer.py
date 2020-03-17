@@ -20,6 +20,7 @@ import datetime				#same
 import time
 from threading import RLock
 import UartLayer
+from dictionary import *
 '''Verrou for Communications with the DPC'''
 
 
@@ -66,7 +67,17 @@ class LabtoolLayer(object):
 		self.TMTC_COM = UartLayer.UartLayer(self.app)
 
 		''' Acknowledges '''
-		
+	def FloatToRaw(self,floatValue,nameTM):
+		value = float(floatValue)
+		value /= ( TABLE_CONVERSION[nameTM] ) 
+		value = int(value)
+		return value
+	
+	def RawToFloat(self,rawValue,nameTM):
+		value = rawValue
+		value *= ( TABLE_CONVERSION[nameTM] ) 
+		value = int(value)
+		return value
 		
 	def SendTC(self,TC_ID,P1,P2=0X0000):
 		#print("OK BOOMER")
@@ -80,17 +91,34 @@ class LabtoolLayer(object):
 		ArrayToSend.append(P2&0XFF)
 		print(ArrayToSend)
 		self.TMTC_COM.SendDatas(ArrayToSend)
+
+	def SetMode(self,mode):
+		value = 1
+		self.SendTC(TC_TABLE_ID['TC_SET_MODE'],mode)
 		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
+	def SetUmot(self,value):	
+		value = self.FloatToRaw(value,'TM_U_MOT')
+		self.SendTC(TC_TABLE_ID['TC_SET_U_MOT'],value)
+
+	def SetImot(self,value):
+		value = self.FloatToRaw(value,'TM_I_MOT')
+		self.SendTC(TC_TABLE_ID['TC_SET_I_MOT'],value)
+
+	def SetUbrake(self,value):
+		value = self.FloatToRaw(value,'TM_U_BRAKE')
+		self.SendTC(TC_TABLE_ID['TC_SET_U_BRAKE'],value)
+	
+	def SetIbrake(self,value):
+		value = self.FloatToRaw(value,'TM_I_BRAKE')
+		self.SendTC(TC_TABLE_ID['TC_SET_I_BRAKE'],value)
+	
+	def SetSpeedMot(self,value):
+		value = self.FloatToRaw(value,'TM_SP_MOT')
+		self.SendTC(TC_TABLE_ID['TC_SET_SP_MOT'],value)
+	
+	def SetCrMot(self,value):
+		value = self.FloatToRaw(value,'TM_CR_MOT')
+		self.SendTC(TC_TABLE_ID['TC_SET_CR_MOT'],value)
 		
 	
   

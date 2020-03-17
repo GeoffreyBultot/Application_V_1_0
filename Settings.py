@@ -30,26 +30,38 @@ class SettingsScreen(Screen):
 		self.loadedMotorUMax = 0
 		self.loadedMotorIMax = 0
 		self.loadedMotorSPMax = 0
-	def AddScript(self,title):
-		print(self.Automatic_Script_Content)
+	def AddScript(self):
+		title = self.ids.txtInput_NameFileScript.text
 		
-		
-		
-		ScriptFile = ScriptsDatabase+"/"+title+".csv"
-		try:
-			file = open(ScriptFile, 'r')
-			ValidDatas = False
-			file.close()
-		except IOError:
-			file = open(ScriptFile, 'w')
-			file.close()
+		if(title != ""):
+			ScriptFile = ScriptsDatabase+"/"+title+".csv"
+			try:
+				file = open(ScriptFile, 'r')
+				ValidDatas = False
+				file.close()
+			except IOError:
+				file = open(ScriptFile, 'w')
+				file.close()
+			length = len(self.Automatic_Script_Content)
+			
+			with open(ScriptFile, 'w', newline='') as file:
+				writer = csv.writer(file, delimiter=';')
+				for i in range (0,length):
+					writer.writerow(self.Automatic_Script_Content[i])
+	def RemoveScenarioToScript(self):
 		length = len(self.Automatic_Script_Content)
-		
-		with open(ScriptFile, 'w', newline='') as file:
-			writer = csv.writer(file, delimiter=';')
-			for i in range (0,length):
-				writer.writerow([self.Automatic_Script_Content[i]])
-		
+		s = self.ids.txtInput_Script_preparation_File.text
+		if( length > 6 ): #TODO: remplacer avec une vraie valeur. 6 est celle du nombre de lignes dans le fichier moteur
+			i = len(s) -1
+			while( '\n' != s[i]):
+				i -= 1
+			s_bis = ""
+			for j in range(0,i):
+				s_bis += s[j]
+			self.ids.txtInput_Script_preparation_File.text = s_bis
+			del self.Automatic_Script_Content[length-1]
+			
+			
 	def AddScenarioToScript(self, TypeScenario, P1 , P2 , CST):
 		
 		lineScriptFile = [TypeScenario,P1,P2,CST]
@@ -59,6 +71,7 @@ class SettingsScreen(Screen):
 			if(TypeScenario in AUTO_TESTS_IDS):
 				if(TypeScenario == 'U_MIN_TO_U_MAX'):
 					if( (float(P1) < self.loadedMotorUMax) & (float(P2) < self.loadedMotorUMax) ):
+						lineScriptFile = [TypeScenario,P1,P2,0]
 						self.Automatic_Script_Content.append(lineScriptFile)
 						self.ids.txtInput_Script_preparation_File.text += "\nU = " 	+ P1	+ "V to U = "		+ P2 +	"V"
 				if(	CST != "") :
@@ -92,7 +105,7 @@ class SettingsScreen(Screen):
 			with open(MotorFile, 'r', newline='') as file:
 				reader = csv.reader(file, delimiter=';')
 				for row in reader:
-					self.Automatic_Script_Content.append(row[0]+";"+row[1])
+					self.Automatic_Script_Content.append([row[0],row[1]])#row[0]+";"+row[1])
 					if(row[0] == "Name"): 
 						Name	= str(row[1])	
 					if(row[0] == "Type"):
