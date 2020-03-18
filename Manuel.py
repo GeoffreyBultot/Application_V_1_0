@@ -28,6 +28,8 @@ from dictionary import *
 from kivy.uix.popup import Popup
 import csv
 import os
+
+
 class ManualScreen(Screen):
 	value = NumericProperty(0.0)
 	def __init__(self, app,**kwargs):

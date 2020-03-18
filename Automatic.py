@@ -23,18 +23,24 @@ from kivy.uix.label import Label
 from kivy.uix.textinput import TextInput
 from kivy.uix.button import Button
 from kivy.uix.slider import Slider
+
 from Gauge import Gauge
 from dictionary import *
-from threading import Thread
 
+from threading import Thread
+import datetime
 import csv
 import os
+
+AutomaticChartsFolder = os.curdir+"/Automatic_Charts"
 
 thread_auto_running = False
 tb_Scenarios = []
 num_of_scenarios = len(tb_Scenarios)
 idx_current_scenario = 0
 current_scenario = []
+SetUpFile = ""
+current_File_Chart = ""
 textFor_txtBox_Measures = ""
 textFor_txtBox_SetPoints = ""
 textFor_lbl_SetPoints = "Test : No test in progress"
@@ -43,7 +49,6 @@ class thread_auto(Thread):
 	'''
 	This thread will execute un backgroud the automatic diagram and will update the MMI at the same time
 	'''
-	
 		
 	def __init__(self,screen):
 		Thread.__init__(self)		 #init the mother thread
@@ -108,20 +113,25 @@ class thread_auto(Thread):
 		interval = (P2-P1)/10
 		interval = round(interval,2)
 		currentU = round(P1,2)
-		while( (currentU < (P2+interval) ) & (thread_auto_running) ):
-			textFor_txtBox_SetPoints += "Umot set : "+str(currentU)+" V \n"
-			self.screen.app.labtooTestBench.SetUmot(currentU)
-			
-			U =	round(self.screen.gaugeU_Motor.value,2)
-			V =	round(self.screen.gauge_Speed.value,2) 
-			I =	round(self.screen.gaugeI_Motor.value,2)
-			textFor_txtBox_Measures += "U = "	+ str(U)	+ "V  "
-			textFor_txtBox_Measures += "v = "	+ str(V)	+ "tr/min  "
-			textFor_txtBox_Measures += "I = "	+ str(I) 	+ "A \n"
-			
-			currentU += interval
-			currentU = round(currentU,2)
-			time.sleep(0.5)
+		with open(current_File_Chart, 'a', newline='') as file:
+			writer = csv.writer(file, delimiter=';')
+			writer.writerow(["test: Umin ="+str(P1) + "to Umax "+str(P2)])
+			writer.writerow(["Setting","U [V]","v[tr/min]","I[A]"])
+			while( (currentU < (P2+interval) ) & (thread_auto_running) ):
+				textFor_txtBox_SetPoints += "Umot set : "+str(currentU)+" V \n"
+				self.screen.app.labtooTestBench.SetUmot(currentU)
+				
+				U =	round(self.screen.gaugeU_Motor.value,2)
+				V =	round(self.screen.gauge_Speed.value,2) 
+				I =	round(self.screen.gaugeI_Motor.value,2)
+				textFor_txtBox_Measures += "U = "	+ str(U)	+ "V  "
+				textFor_txtBox_Measures += "v = "	+ str(V)	+ "tr/min  "
+				textFor_txtBox_Measures += "I = "	+ str(I) 	+ "A \n"
+				writer.writerow(["Set U = "+str(currentU),U,V,I])
+				currentU += interval
+				currentU = round(currentU,2)
+				time.sleep(0.5)
+			writer.writerow(["============================================================"])
 			
 	def scenario_C_FCT_SP_U_CST(self,P1,P2,CST):
 		global textFor_txtBox_SetPoints
@@ -129,48 +139,57 @@ class thread_auto(Thread):
 		interval = (P2-P1)/10
 		interval = round(interval,2)
 		currentCR = round(P1,2)
-		
-		while( (currentCR < (P2+interval) ) & (thread_auto_running) ):
-			textFor_txtBox_SetPoints += "Couple set : "+str(currentCR)+" Nm\n"
-			
-			self.screen.app.labtooTestBench.SetCrMot(currentCR)
-			self.screen.app.labtooTestBench.SetUmot(CST)
-			
-			C =	round(self.screen.gauge_Couple.value,2)
-			V =	round(self.screen.gauge_Speed.value,2) 
-			I =	round(self.screen.gaugeI_Motor.value,2)
-			U =	round(self.screen.gaugeU_Motor.value,2)
-			textFor_txtBox_Measures += "Cr = "	+ str(C)	+ "Nm  "
-			textFor_txtBox_Measures += "v = "	+ str(V)	+ "tr/min  "
-			textFor_txtBox_Measures += "I = "	+ str(I) 	+ "A \n"
-			textFor_txtBox_Measures += "U = "	+ str(I) 	+ "V \n"
-			
-			currentCR += interval
-			currentCR = round(currentCR,2)
-			time.sleep(0.5)
-		
+		with open(current_File_Chart, 'a', newline='') as file:
+			writer = csv.writer(file, delimiter=';')
+			writer.writerow(["test: Couple = fct(v) @ Umotor = "+str(CST)])
+			writer.writerow(["Setting","Cr [Nm]","v[tr/min]","I[A]","U[V]"])
+			while( (currentCR < (P2+interval) ) & (thread_auto_running) ):
+				textFor_txtBox_SetPoints += "Couple set : "+str(currentCR)+" Nm\n"
+				
+				self.screen.app.labtooTestBench.SetCrMot(currentCR)
+				self.screen.app.labtooTestBench.SetUmot(CST)
+				
+				C =	round(self.screen.gauge_Couple.value,2)
+				V =	round(self.screen.gauge_Speed.value,2) 
+				I =	round(self.screen.gaugeI_Motor.value,2)
+				U =	round(self.screen.gaugeU_Motor.value,2)
+				textFor_txtBox_Measures += "Cr = "	+ str(C)	+ "Nm  "
+				textFor_txtBox_Measures += "v = "	+ str(V)	+ "tr/min  "
+				textFor_txtBox_Measures += "I = "	+ str(I) 	+ "A \n"
+				textFor_txtBox_Measures += "U = "	+ str(U) 	+ "V \n"
+				writer.writerow(["Set CR = "+str(currentCR),C,V,I,U])
+				currentCR += interval
+				currentCR = round(currentCR,2)
+				time.sleep(0.5)
+			writer.writerow(["============================================================"])
 	def scenario_U_FCT_SP_C_CST(self,P1,P2,CST):
 		global textFor_txtBox_SetPoints
 		global textFor_txtBox_Measures
 		interval = (P2-P1)/10
 		interval = round(interval,2)
 		currentSP = round(P1,2)
-		while( (currentSP < (P2+interval) ) & (thread_auto_running) ):
-			textFor_txtBox_SetPoints += "Speed set : "+str(currentSP)+"tr/min \n"
-			
-			self.screen.app.labtooTestBench.SetSpeedMot(currentSP)
-			self.screen.app.labtooTestBench.SetCrMot(CST)
-			
-			U =	round(self.screen.gaugeU_Motor.value,2)
-			V =	round(self.screen.gauge_Speed.value,2) 
-			I =	round(self.screen.gaugeI_Motor.value,2)
-			textFor_txtBox_Measures += "U = "	+ str(U)	+ "V  "
-			textFor_txtBox_Measures += "v = "	+ str(V)	+ "tr/min  "
-			textFor_txtBox_Measures += "I = "	+ str(I) 	+ "A \n"
-			
-			currentSP += interval
-			currentSP = round(currentSP,2)
-			time.sleep(0.5)
+		with open(current_File_Chart, 'a', newline='') as file:
+			writer = csv.writer(file, delimiter=';')
+			writer.writerow(["test: U = fct(v) @ CR = "+str(CST)])
+			writer.writerow(["Setting","Cr [Nm]","v[tr/min]","I[A]","U[V]"])
+			while( (currentSP < (P2+interval) ) & (thread_auto_running) ):
+				textFor_txtBox_SetPoints += "Speed set : "+str(currentSP)+"tr/min \n"
+				
+				self.screen.app.labtooTestBench.SetSpeedMot(currentSP)
+				self.screen.app.labtooTestBench.SetCrMot(CST)
+				C =  round(self.screen.gauge_Couple.value,2)
+				U =	round(self.screen.gaugeU_Motor.value,2)
+				V =	round(self.screen.gauge_Speed.value,2) 
+				I =	round(self.screen.gaugeI_Motor.value,2)
+				textFor_txtBox_Measures += "Cr = "	+ str(C)	+ "Nm  "
+				textFor_txtBox_Measures += "v = "	+ str(V)	+ "tr/min  "
+				textFor_txtBox_Measures += "I = "	+ str(I) 	+ "A \n"
+				textFor_txtBox_Measures += "U = "	+ str(U)	+ "V  "
+				writer.writerow(["Set v = "+str(currentSP),C,V,I,U])
+				currentSP += interval
+				currentSP = round(currentSP,2)
+				time.sleep(0.5)
+			writer.writerow(["============================================================"])
 				
 	def scenario_SP_FCT_U_C_CST(self,P1,P2,CST):
 		global textFor_txtBox_SetPoints
@@ -178,25 +197,31 @@ class thread_auto(Thread):
 		interval = (P2-P1)/10
 		interval = round(interval,2)
 		currentU = round(P1,2)
-		while( (currentU < (P2+interval) ) & (thread_auto_running) ):
-			textFor_txtBox_SetPoints += "Voltage set : "+str(currentU)+" V\n"
+		with open(current_File_Chart, 'a', newline='') as file:
+			writer = csv.writer(file, delimiter=';')
+			writer.writerow(["test: v = fct(U) @ CR = "+str(CST)])
+			writer.writerow(["Setting","Cr [Nm]","v[tr/min]","I[A]","U[V]"])
 			
-			
-			self.screen.app.labtooTestBench.SetUmot(currentU)
-			self.screen.app.labtooTestBench.SetCrMot(CST)
-			
-			C =	round(self.screen.gauge_Couple.value,2)
-			U =	round(self.screen.gaugeU_Motor.value,2)
-			V =	round(self.screen.gauge_Speed.value,2) 
-			I =	round(self.screen.gaugeI_Motor.value,2)
-			textFor_txtBox_Measures += "Cr = "	+ str(C)	+ "Nm  "
-			textFor_txtBox_Measures += "U = "	+ str(U)	+ "V  "
-			textFor_txtBox_Measures += "v = "	+ str(V)	+ "tr/min  "
-			textFor_txtBox_Measures += "I = "	+ str(I) 	+ "A \n"
-			
-			currentU += interval
-			currentU = round(currentU,2)
-			time.sleep(0.5)
+			while( (currentU < (P2+interval) ) & (thread_auto_running) ):
+				textFor_txtBox_SetPoints += "Voltage set : "+str(currentU)+" V\n"
+				
+				self.screen.app.labtooTestBench.SetUmot(currentU)
+				self.screen.app.labtooTestBench.SetCrMot(CST)
+				
+				C =	round(self.screen.gauge_Couple.value,2)
+				U =	round(self.screen.gaugeU_Motor.value,2)
+				V =	round(self.screen.gauge_Speed.value,2) 
+				I =	round(self.screen.gaugeI_Motor.value,2)
+				textFor_txtBox_Measures += "Cr = "	+ str(C)	+ "Nm  "
+				textFor_txtBox_Measures += "U = "	+ str(U)	+ "V  "
+				textFor_txtBox_Measures += "v = "	+ str(V)	+ "tr/min  "
+				textFor_txtBox_Measures += "I = "	+ str(I) 	+ "A \n"
+				writer.writerow(["Set U = "+str(currentU),C,V,I,U])
+				
+				currentU += interval
+				currentU = round(currentU,2)
+				time.sleep(0.5)
+			writer.writerow(["============================================================"])
 				
 		
 
@@ -241,6 +266,7 @@ class AutomaticScreen(Screen):
 	def Start_Stop(self):
 		global thread_auto_running
 		global tb_Scenarios
+		global current_File_Chart
 		global textFor_txtBox_SetPoints
 		global textFor_txtBox_Measures
 		global textFor_lbl_SetPoints
@@ -256,14 +282,46 @@ class AutomaticScreen(Screen):
 			self.ids.btn_Auto_LOAD.disabled = True
 			self.ids.btn_Auto_START_STOP.text = "STOP"
 			thread_auto_running = True
-			self.Automatic_Thread =thread_auto(self)
-			self.Automatic_Thread.start()
 			textFor_txtBox_SetPoints = ""
 			textFor_txtBox_Measures = ""
 			
+			if not os.path.exists(AutomaticChartsFolder):
+				os.mkdir(AutomaticChartsFolder)
+			
+			now = datetime.datetime.now()
+			filename_w_ext = os.path.basename(SetUpFile)
+			filename, file_extension = os.path.splitext(filename_w_ext)
+			current_File_Chart = AutomaticChartsFolder+"/DataTestOf_"+str(filename)+"_"
+			current_File_Chart += str(now.year) + "_" + str(now.month)   + "_" + str(now.day)      + "_" 
+			current_File_Chart += str(now.hour) + "h_" + str(now.minute ) + "m_" + str(now.second) + "s.csv"
+			
+			try:
+				file = open(current_File_Chart, 'r')
+				file.close()
+			except :
+				file = open(current_File_Chart, 'w')
+				file.close()
+				pass
+			
+			with open(current_File_Chart, 'w', newline='') as file:
+				writer = csv.writer(file, delimiter=';')
+				with open(SetUpFile, 'r', newline='') as file:
+					reader = csv.reader(file, delimiter=';')
+					writer.writerow(["=================Motor Informations================="])
+					i = 0
+					for row in reader:
+						i += 1
+						writer.writerow(row)
+						if(i == 6):#TODO: modifier avec une valeur pour la longueur des fichiers moteurs
+							writer.writerow(["================Scenarios Informations================"])
+					writer.writerow(["=============================================="])
+			
+			self.Automatic_Thread =thread_auto(self)
+			self.Automatic_Thread.start()
 			
 	def LoadSetUpFile(self,selection):
 		global tb_Scenarios
+		global SetUpFile
 		tb_Scenarios = []
 		if(len(selection)):
 			tb_Scenarios = []
@@ -281,13 +339,8 @@ class AutomaticScreen(Screen):
 			with open(SetUpFile, 'r', newline='') as file:
 				reader = csv.reader(file, delimiter=';')
 				
-				
 				for row in reader:
-					print(row)
-					print(row[0])
-					#for(i in range(0, len(INV_AUTO_TESTS_IDS)):
 					if(row[0] in AUTO_TESTS_IDS):
-						print(":o")
 						tb_Scenarios.append(row)
 		
 		if(len(tb_Scenarios) > 0):
