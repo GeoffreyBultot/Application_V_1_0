@@ -81,6 +81,7 @@ class thread_auto(Thread):
 				print(current_scenario[3])
 				CST = float(current_scenario[3])
 				self.exectute_scenario(scenario,P1,P2,CST)
+				time.sleep(2)
 			idx_current_scenario += 1
 			
 	def exectute_scenario(self,scenario,P1,P2,CST):
@@ -110,27 +111,33 @@ class thread_auto(Thread):
 		
 		global textFor_txtBox_SetPoints
 		global textFor_txtBox_Measures
-		interval = (P2-P1)/10
+		interval = (P2-P1)/25
 		interval = round(interval,2)
 		currentU = round(P1,2)
+		LastU = 0
 		with open(current_File_Chart, 'a', newline='') as file:
 			writer = csv.writer(file, delimiter=';')
 			writer.writerow(["test: Umin ="+str(P1) + "to Umax "+str(P2)])
 			writer.writerow(["Setting","U [V]","v[tr/min]","I[A]"])
 			while( (currentU < (P2+interval) ) & (thread_auto_running) ):
 				textFor_txtBox_SetPoints += "Umot set : "+str(currentU)+" V \n"
+				# while(LastU<currentU):
+					# self.screen.app.labtooTestBench.SetUmot(LastU)
+					# time.sleep(0.01)
+					# LastU += 0.01
 				self.screen.app.labtooTestBench.SetUmot(currentU)
-				
-				U =	round(self.screen.gaugeU_Motor.value,2)
-				V =	round(self.screen.gauge_Speed.value,2) 
-				I =	round(self.screen.gaugeI_Motor.value,2)
+				time.sleep(3)
+				U =	round(self.screen.gaugeU_Motor.value,3)
+				V =	round(self.screen.gauge_Speed.value,3) 
+				I =	round(self.screen.gaugeI_Motor.value,3)
 				textFor_txtBox_Measures += "U = "	+ str(U)	+ "V  "
 				textFor_txtBox_Measures += "v = "	+ str(V)	+ "tr/min  "
 				textFor_txtBox_Measures += "I = "	+ str(I) 	+ "A \n"
 				writer.writerow(["Set U = "+str(currentU),U,V,I])
+				LastU = currentU
 				currentU += interval
 				currentU = round(currentU,2)
-				time.sleep(0.5)
+			self.screen.app.labtooTestBench.SetUmot(0)
 			writer.writerow(["============================================================"])
 			
 	def scenario_C_FCT_SP_U_CST(self,P1,P2,CST):
@@ -355,6 +362,7 @@ class AutomaticScreen(Screen):
 		#print(tab_TM)
 		raw_couple	= tab_TM[TM_TABLE_ID['TM_CR_MOT']]
 		raw_U_Motor	= tab_TM[TM_TABLE_ID['TM_U_MOT']]
+		
 		raw_I_Motor	= tab_TM[TM_TABLE_ID['TM_I_MOT']]
 		raw_Speed	= tab_TM[TM_TABLE_ID['TM_SP_MOT']]
 		raw_U_Brake		= tab_TM[TM_TABLE_ID['TM_U_BRAKE']]
@@ -362,10 +370,11 @@ class AutomaticScreen(Screen):
 
 		self.gaugeU_Motor.value		= (raw_U_Motor	*	TABLE_CONVERSION['TM_U_MOT'])#3.3/4095/0.0223)
 		self.gaugeI_Motor.value		= (raw_I_Motor	*	TABLE_CONVERSION['TM_I_MOT'])
-		self.gauge_Speed.value		= (raw_Speed		*	TABLE_CONVERSION['TM_SP_MOT'])
+		self.gauge_Speed.value		= (raw_Speed	*	TABLE_CONVERSION['TM_SP_MOT'])
 		self.gauge_Couple.value		= (raw_couple	*	TABLE_CONVERSION['TM_CR_MOT'])
 		self.gaugeU_Brake.value		= (raw_U_Brake	*	TABLE_CONVERSION['TM_U_BRAKE'])
 		self.gaugeI_brake.value		= (raw_I_Brake	*	TABLE_CONVERSION['TM_I_BRAKE'])
+		#print(raw_U_Motor,self.gaugeU_Motor.value)
 		#At the end of test, button clickable and and script loadable
 		if( (idx_current_scenario >= num_of_scenarios) & (thread_auto_running == True) ):
 			self.ids.btn_Auto_LOAD.disabled = False

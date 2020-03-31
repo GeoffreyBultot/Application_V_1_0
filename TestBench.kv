@@ -758,7 +758,7 @@ BoxLayout:
 		ActionPrevious:
 			#title: app.title if app.title is not None else 'Action Previous'
 			title: app.title
-			on_release: app.changeScreen(0)
+			on_release: app.actionPrevious_Released()
 				
 		ActionButton:
 			text: "Emergency"

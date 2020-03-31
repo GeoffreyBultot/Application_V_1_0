@@ -51,9 +51,9 @@ TC_TABLE_ID = {	'TC_SET_MODE':			0,
 #To send TC parameter : Real value / factor = raw_value
 TABLE_CONVERSION = {	'TM_CR_MOT'	:	0.001864992*0.186,#WITH12BITS : 0.00724,#0.039*0.186
 										'TM_U_MOT'		:	0.037875,#3.3/4095/0.0223),
-										'TM_I_MOT'		:	0.000117875,#0.00236,#3.3/4095/6.82927/0.05)
+										'TM_I_MOT'		:	0.000345575,#0.00236,#0.000117875,#0.00236,#3.3/4095/6.82927/0.05)
 										'TM_SP_MOT'	:	0.01,#NOT REAL
-										'TM_U_BRAKE'	:	0.037875,#
+										'TM_U_BRAKE'	:	0.000345575,#
 										'TM_I_BRAKE'	:	0.00236}#
 									
 									

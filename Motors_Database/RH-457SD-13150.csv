@@ -1,0 +1,6 @@
+Name;RH-457SD-13150
+Type;DC
+UMotorMax;24
+IMotorMax;0.1
+PMotorMax;100
+SpeedMax;4000

@@ -18,6 +18,7 @@ from kivy.gesture import Gesture
 from kivy.uix.widget import Widget
 import Gauge
 from Automatic import AutomaticScreen
+import Automatic
 from Manuel import ManualScreen
 from Settings import SettingsScreen
 import random
@@ -62,10 +63,15 @@ class TestBenchApp(App):
 	Table_Tm_Reg = []
 	global ReadTM_Thread_ON
 	def build(self):
-		
+		self.root = Builder.load_file('TestBench.kv')
 		self.labtooTestBench = LabtoolLayer(self)
 		configParser = configparser.RawConfigParser()	
 		configParser.read(filename)
+		
+		self.HomeScreen = HomeScreen(self,name='HomeScreen')
+		self.AutomaticScreen = AutomaticScreen(self,name='AutomaticScreen')
+		self.ManualScreen = ManualScreen(self,name='ManualScreen')
+		self.SettingsScreen = SettingsScreen(self,name='SettingsScreen')
 		
 		self.AbsoluteMaxRatings = {
 			'C_U_MOT_MAX'	: float(configParser.get('ABSOLUTEMAXRATINGS','UMotorMax')),
@@ -81,13 +87,14 @@ class TestBenchApp(App):
 		
 		for k, v in TM_TABLE_ID.items():
 			self.Table_Tm_Reg.append(0)
-		self.root = Builder.load_file('TestBench.kv')
+		
 		
 		sm = self.root.ids.sm
-		sm.add_widget(HomeScreen(self,name='HomeScreen'))
-		sm.add_widget(AutomaticScreen(self,name='AutomaticScreen'))
-		sm.add_widget(ManualScreen(self,name='ManualScreen'))
-		sm.add_widget(SettingsScreen(self,name='SettingsScreen'))
+		
+		sm.add_widget(self.HomeScreen)
+		sm.add_widget(self.AutomaticScreen)
+		sm.add_widget(self.ManualScreen)
+		sm.add_widget(self.SettingsScreen)
 		sm.transition = SlideTransition()
 		Clock.schedule_interval(sm.current_screen.update, 1.0/60.0)
 		self.changeScreen(2)
@@ -95,18 +102,30 @@ class TestBenchApp(App):
 	def changeScreen(self,idx_Screen):
 		print(self.Table_Tm_Reg)
 		sm = self.root.ids.sm
+		self.labtooTestBench.SetUmot(0.0)
 		Clock.unschedule(sm.current_screen.update)
 		sm.current = Screens_dict[idx_Screen]
 		Clock.schedule_once(self.StartUpdateCurrentScreen, SlideTransition().duration+0.1)
+	def actionPrevious_Released(self):
+		sm = self.root.ids.sm
+		INV_SCREEN_DICT = {v: k for k, v in Screens_dict.items()}
 		
+		if(sm.current == Screens_dict[INV_SCREEN_DICT['AutomaticScreen']]):
+			if(Automatic.thread_auto_running):
+				self.AutomaticScreen.Start_Stop()
+		self.changeScreen(0)
+			#sm.current = 
+			
 	def StartUpdateCurrentScreen(self,dt):
 		sm = self.root.ids.sm
 		Clock.schedule_interval(sm.current_screen.update, 1.0/500.0)
 		pass
 	def quit(self):
+		self.labtooTestBench.SetUmot(0.0)
 		self.labtooTestBench.TMTC_COM.ReadBus_Threat_ON = False
 		self.labtooTestBench.TMTC_COM.ReadThread.join()
 		self.get_running_app().stop()
 
 if __name__ == '__main__':
 	TestBenchApp().run()
+	
