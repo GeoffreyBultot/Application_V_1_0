@@ -342,11 +342,24 @@ class AutomaticScreen(Screen):
 				print(":o")
 				return
 			INV_AUTO_TESTS_IDS = {v: k for k, v in AUTO_TESTS_IDS.items()}
-			
+
 			with open(SetUpFile, 'r', newline='') as file:
 				reader = csv.reader(file, delimiter=';')
 				
 				for row in reader:
+					if(row[0] == "Name"):
+						pass
+					if(row[0] == "Type"):
+						pass
+					if(row[0] == "UMotorMax"):
+						self.gaugeU_Motor.maxvalue = float(row[1])
+					if(row[0] == "IMotorMax"):
+						self.gaugeI_Motor.maxvalue = float(row[1])
+					if(row[0] == "PMotorMax"):
+						pass#self.ids.Manual_P.text = row[1]
+					if(row[0] == "SpeedMax"):
+						self.gauge_Speed.maxvalue = float(row[1])
+					
 					if(row[0] in AUTO_TESTS_IDS):
 						tb_Scenarios.append(row)
 		
