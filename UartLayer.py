@@ -34,7 +34,7 @@ class UartLayer(object):
 		self.app = app
 		self.BusState = C_BUS_IDLE
 		# We only have SPI bus 0 available to us on the Pi
-		bus = 0
+		bus = 1
 		#Device is the chip select pin. Set to 0 or 1, depending on the connections
 		device = 0
 		# Enable SPI
@@ -42,7 +42,7 @@ class UartLayer(object):
 		# Open a connection to a specific bus and device (chip select pin)
 		self.spi.open(bus, device)
 		# Set SPI speed and mode
-		self.spi.max_speed_hz = 375000
+		self.spi.max_speed_hz = 140625#375000
 		
 		self.spi.lsbfirst=False
 		
