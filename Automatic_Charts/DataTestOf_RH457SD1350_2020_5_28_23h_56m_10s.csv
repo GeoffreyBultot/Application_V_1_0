@@ -1,0 +1,14 @@
+=================Motor Informations=================
+Name;RH-457SD-13150
+Type;DC
+UMotorMax;24
+IMotorMax;0.1
+PMotorMax;100
+SpeedMax;4000
+================Scenarios Informations================
+U_MIN_TO_U_MAX;0;23.9;0
+==============================================
+test: Umin =0.0to Umax 23.9
+Setting;U [V];v[tr/min];I[A]
+Set U = 0.0;38.784;15.36;0.442
+============================================================

@@ -223,7 +223,7 @@ BoxLayout:
 				
 			Button:
 				id:Manual_TC_Set_Umotor
-				background_normal:	"Datas/manual_button_up.ico"
+				background_normal:	"Datas/manual_button_up.png"
 				background_down:	"Datas/manual_button_down.ico"
 				size_hint: None,None
 				size: 50, 50
@@ -231,8 +231,8 @@ BoxLayout:
 				on_release:root.btn_Set_Manual_Release('Manual_TC_Set_Umotor')
 			Button:
 				id:Manual_TC_Set_Imotor
-				background_normal:	"Datas/manual_button_up.ico"
-				background_down:	"Datas/manual_button_down.ico"
+				background_normal:	"Datas/manual_button_up.png"
+				background_down:	"Datas/manual_button_down.png"
 				size_hint: None,None
 				size: 50, 50
 				border: (0, 0, 0, 0)  # Don't stretch the outer two pixels on each edge when resizing.
@@ -240,16 +240,16 @@ BoxLayout:
 				
 			Button:
 				id:Manual_TC_Set_Smotor
-				background_normal:	"Datas/manual_button_up.ico"
-				background_down:	"Datas/manual_button_down.ico"
+				background_normal:	"Datas/manual_button_up.png"
+				background_down:	"Datas/manual_button_down.png"
 				size_hint: None,None
 				size: 50, 50
 				border: (0, 0, 0, 0)  # Don't stretch the outer two pixels on each edge when resizing.
 				on_release:root.btn_Set_Manual_Release('Manual_TC_Set_Speed')
 			Button:
 				id:Manual_TC_Set_Cmotor
-				background_normal:	"Datas/manual_button_up.ico"
-				background_down:	"Datas/manual_button_down.ico"
+				background_normal:	"Datas/manual_button_up.png"
+				background_down:	"Datas/manual_button_down.png"
 				size_hint: None,None
 				size: 50, 50
 				border: (0, 0, 0, 0)  # Don't stretch the outer two pixels on each edge when resizing.
@@ -295,9 +295,9 @@ BoxLayout:
 	name: 'HomeScreen'
 	
 	GridLayout:
-		rows : 2
-		cols : 2
-		pos_hint:{'center_x':0.75, 'center_y':0.4}
+		rows : 1
+		cols : 3
+		pos_hint:{'center_x':0.65, 'center_y':0.3}
 		spacing : (30,30)
 		Button:
 			on_release: app.changeScreen(1)#app.root.ids.sm.current = 'ManualScreen'
@@ -321,17 +321,12 @@ BoxLayout:
 			size_hint: None,None
 			size: 180, 180
 		
-		Button:
-			
-			size_hint: None,None
-			size: 180, 180
-
 <SettingsScreen>:
 	name: 'SettingsScreen'
 	GridLayout:
-		rows : 2
+		rows : 1
 		cols : 3
-		pos_hint:{'center_x':0.75, 'center_y':0.30}
+		pos_hint:{'center_x':0.7, 'center_y':0.25}
 		spacing : (50,50)
 		Button:
 			on_release: Popup_Add_Motor.open()
@@ -353,26 +348,6 @@ BoxLayout:
 			on_release: Popup_Add_Script.open()
 			background_normal:	"Datas/scripting_img.png"
 			background_down:	"Datas/scripting_img.png"
-			size_hint: None,None
-			size: 128, 128
-		
-		Button:
-			background_normal:	"Datas/delete_file.png"
-			background_down:	"Datas/delete_file.png"
-			size_hint: None,None
-			size: 128, 128
-		
-		Button:
-			background_normal:	"Datas/savedir_file.png"
-			background_down:	"Datas/savedir_file.png"
-			size_hint: None,None
-			size: 128, 128
-			
-		
-		
-		Button:
-			background_normal:	"Datas/savedir_file.png"
-			background_down:	"Datas/savedir_file.png"
 			size_hint: None,None
 			size: 128, 128
 	BoxLayout:

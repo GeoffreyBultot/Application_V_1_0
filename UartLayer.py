@@ -10,7 +10,7 @@ import serial
 import serial.tools.list_ports
 from threading import Thread
 import time
-import spidev
+#import spidev
 from dictionary import *
 
 C_BUS_IDLE = 0x00
@@ -38,15 +38,15 @@ class UartLayer(object):
 		#Device is the chip select pin. Set to 0 or 1, depending on the connections
 		device = 0
 		# Enable SPI
-		self.spi = spidev.SpiDev()
+		#self.spi = spidev.SpiDev()
 		# Open a connection to a specific bus and device (chip select pin)
-		self.spi.open(bus, device)
+		#self.spi.open(bus, device)
 		# Set SPI speed and mode
-		self.spi.max_speed_hz = 140625#375000
+		#self.spi.max_speed_hz = 140625#375000
 		
-		self.spi.lsbfirst=False
+		#self.spi.lsbfirst=False
 		
-		self.spi.mode=0b00
+		#self.spi.mode=0b00
 		
 		self.ReadBus_Threat_ON	= True
 		self.ReadThread= Thread(target=self.RefreshTM_Thread,args=())
@@ -59,8 +59,8 @@ class UartLayer(object):
 		while(self.BusState == C_BUS_BUSY):
 			pass
 		self.BusState == C_BUS_BUSY
-		respA=self.spi.xfer2(array)
-		resp = self.spi.readbytes(6)
+		#respA=self.spi.xfer2(array)
+		#resp = self.spi.readbytes(6)
 		self.BusState == C_BUS_IDLE
 		
 		
@@ -79,8 +79,8 @@ class UartLayer(object):
 					self.BusState = C_BUS_BUSY
 					for i in range (0,len(TM_TABLE_ID)):	
 						ID = TM_TABLE_ID[inv_TM_TABLE_ID[i]]
-						respA=self.spi.xfer2([0x80,i,0,0,0,0])#,0x80,0x24,0x41,0x2,0x1,0x2,0x1,0x2,0x1,0x2,0x1,0x2,0x1,0x2])
-						temptable.append(self.spi.readbytes(6))
+						#respA=self.spi.xfer2([0x80,i,0,0,0,0])#,0x80,0x24,0x41,0x2,0x1,0x2,0x1,0x2,0x1,0x2,0x1,0x2,0x1,0x2])
+						temptable.append([0,0,2+i,0,0,0])
 					buff_Telemetries_Words = []
 					for i in range (0,len(temptable)):
 						data_temp =  temptable[i][1]

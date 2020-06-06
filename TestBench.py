@@ -33,7 +33,7 @@ from LabtoolLayer import *
 from kivy.config import Config
 import configparser
 import time
-Config.set('graphics', 'resizable', False)
+Config.set('graphics', 'resizable', True)
 Config.set('graphics', 'width', '800')#'1024')
 Config.set('graphics', 'height', '400')#'600')
 
@@ -63,7 +63,9 @@ class TestBenchApp(App):
 	Table_Tm_Reg = []
 	global ReadTM_Thread_ON
 	def build(self):
-		self.root = Builder.load_file('TestBench.kv')
+		#self.root = Builder.load_file('TestBench.kv')
+		
+		
 		self.labtooTestBench = LabtoolLayer(self)
 		configParser = configparser.RawConfigParser()	
 		configParser.read(filename)
@@ -97,7 +99,7 @@ class TestBenchApp(App):
 		sm.add_widget(self.SettingsScreen)
 		sm.transition = SlideTransition()
 		Clock.schedule_interval(sm.current_screen.update, 1.0/60.0)
-		self.changeScreen(2)
+		#self.changeScreen(2)
 		
 	def changeScreen(self,idx_Screen):
 		print(self.Table_Tm_Reg)
